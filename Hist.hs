@@ -1,9 +1,15 @@
 {-# LANGUAGE OverloadedStrings, UnicodeSyntax, BangPatterns, TemplateHaskell #-}
+{-# LANGUAGE FlexibleContexts #-}
 
-import qualified Data.Foldable as F
-import qualified Data.Traversable as T
+module Hist (
+    hist
+    , common
+    , breaks
+    )where
+
 import Statistics.Sample.Histogram
 import qualified Data.Vector as V
+import qualified Data.Vector.Generic as G
 import Graphics.Rendering.Chart
 import Graphics.Rendering.Chart.Backend.Cairo
 import Data.Colour
@@ -22,7 +28,7 @@ makeLenses ''HistOption
 
 instance Default HistOption where
     def = HistOption {
-        _common = def
+        _common = ylab .~ "Frequency" $ def
         , _breaks = freedman_diaconis
     }
 
@@ -37,8 +43,8 @@ freedman_diaconis xs = round ((maximum xs - minimum xs) / binSzie)
                     quartile1 = weightedAvg 1 4 x' 
                 in quartile3 - quartile1
 
-hist ∷ [Double] → HistOption → String → IO (PickFn ())
-hist xs opt = renderableToFile def (toRenderable layout)
+hist ∷ G.Vector v Double ⇒ v Double → HistOption → String → IO (PickFn ())
+hist xs' opt = renderableToFile def (toRenderable layout)
     where
         layout = 
             layout_title .~ opt^.common^.title
@@ -53,14 +59,7 @@ hist xs opt = renderableToFile def (toRenderable layout)
             $ plot_bars_alignment .~ BarsLeft
             $ def
 
+        xs = G.toList xs'
         numBins = (opt^.breaks) xs
         labels = autoSteps numBins xs
-        counts = V.toList $ histogram_ (length labels) (minimum labels) (maximum labels) (V.fromList xs)
-
-main = do
-    let a = [2,2,4,6,7,8,3,4,4,4,2,3,4,5,6,7,8,3]
-    hist a (
-        common . title .~ "Test"
-        $ common . xlab .~ "Test"
-        $ common . ylab .~ "Test"
-        $ def) "1.png"
+        counts = V.toList $ histogram_ (length labels) (minimum labels) (maximum labels) xs'
