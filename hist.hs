@@ -11,16 +11,24 @@ import Data.Colour.Names
 import Control.Lens
 import Data.Default.Class
 import Statistics.Quantile
+import Type
 
 data HistOption = HistOption {
-    _title ∷ String
-    } deriving (Show)
+    _common ∷ PlotOption
+    , _breaks ∷ [Double] → Int
+    }
 
 makeLenses ''HistOption
 
+instance Default HistOption where
+    def = HistOption {
+        _common = def
+        , _breaks = freedman_diaconis
+    }
+
 --http://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule
-freedman_diaconis_rule ∷ [Double] → Int
-freedman_diaconis_rule xs = round ((maximum xs - minimum xs) / binSzie)
+freedman_diaconis ∷ [Double] → Int
+freedman_diaconis xs = round ((maximum xs - minimum xs) / binSzie)
     where
         binSzie = 2 * iqr xs * n**(-1/3)
         n = fromIntegral $ length xs
@@ -29,13 +37,15 @@ freedman_diaconis_rule xs = round ((maximum xs - minimum xs) / binSzie)
                     quartile1 = weightedAvg 1 4 x' 
                 in quartile3 - quartile1
 
-hist ∷ [Double] → String → IO (PickFn ())
-hist xs = renderableToFile def (toRenderable layout)
+hist ∷ [Double] → HistOption → String → IO (PickFn ())
+hist xs opt = renderableToFile def (toRenderable layout)
     where
         layout = 
-            layout_title .~ "Title"
+            layout_title .~ opt^.common^.title
             $ layout_plots .~ [plotBars bars]
             $ layout_x_axis . laxis_generate .~ autoIndexAxis (fmap show labels)
+            $ layout_x_axis . laxis_title .~ opt^.common.xlab
+            $ layout_y_axis . laxis_title .~ opt^.common.ylab
             $ def ∷ Layout PlotIndex Double
         bars = 
             plot_bars_values .~ addIndexes (fmap return $ counts)
@@ -43,10 +53,14 @@ hist xs = renderableToFile def (toRenderable layout)
             $ plot_bars_alignment .~ BarsLeft
             $ def
 
-        numBins = freedman_diaconis_rule xs
+        numBins = (opt^.breaks) xs
         labels = autoSteps numBins xs
         counts = V.toList $ histogram_ (length labels) (minimum labels) (maximum labels) (V.fromList xs)
 
 main = do
     let a = [2,2,4,6,7,8,3,4,4,4,2,3,4,5,6,7,8,3]
-    hist a "1.png"
+    hist a (
+        common . title .~ "Test"
+        $ common . xlab .~ "Test"
+        $ common . ylab .~ "Test"
+        $ def) "1.png"
