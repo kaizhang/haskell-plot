@@ -1,4 +1,8 @@
 Histogram-haskell
 =================
 
-Histogram plot in Haskell
+Making histogram in Haskell
+
+Example:
+
+![](test1.png)
