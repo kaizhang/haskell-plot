@@ -3,8 +3,12 @@
 
 module Hist (
     hist
+    , hist'
     , common
     , breaks
+    , freedmanDiaconis
+    , squareRoot
+    , riceRule
     )where
 
 import Statistics.Sample.Histogram
@@ -12,16 +16,18 @@ import qualified Data.Vector as V
 import qualified Data.Vector.Generic as G
 import Graphics.Rendering.Chart
 import Graphics.Rendering.Chart.Backend.Cairo
-import Data.Colour
-import Data.Colour.Names
+import Graphics.Rendering.Chart.Gtk
 import Control.Lens
 import Data.Default.Class
 import Statistics.Quantile
 import Type
+import Control.Applicative
+
+type BreakRule = [Double] → Int
 
 data HistOption = HistOption {
     _common ∷ PlotOption
-    , _breaks ∷ [Double] → Int
+    , _breaks ∷ BreakRule
     }
 
 makeLenses ''HistOption
@@ -29,12 +35,12 @@ makeLenses ''HistOption
 instance Default HistOption where
     def = HistOption {
         _common = ylab .~ "Frequency" $ def
-        , _breaks = freedman_diaconis
+        , _breaks = freedmanDiaconis
     }
 
 --http://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule
-freedman_diaconis ∷ [Double] → Int
-freedman_diaconis xs = round ((maximum xs - minimum xs) / binSzie)
+freedmanDiaconis ∷ BreakRule
+freedmanDiaconis xs = round ((maximum xs - minimum xs) / binSzie)
     where
         binSzie = 2 * iqr xs * n**(-1/3)
         n = fromIntegral $ length xs
@@ -43,8 +49,14 @@ freedman_diaconis xs = round ((maximum xs - minimum xs) / binSzie)
                     quartile1 = weightedAvg 1 4 x' 
                 in quartile3 - quartile1
 
-hist ∷ G.Vector v Double ⇒ v Double → HistOption → String → IO (PickFn ())
-hist xs' opt = renderableToFile def (toRenderable layout)
+squareRoot ∷ BreakRule
+squareRoot = round . sqrt . fromIntegral . length
+
+riceRule ∷ BreakRule
+riceRule xs = ceiling (2*(fromIntegral $ length xs)**(1/3))
+
+hist_ ∷ G.Vector v Double ⇒ v Double → HistOption → Layout PlotIndex Double
+hist_ xs' opt = layout
     where
         layout = 
             layout_title .~ opt^.common^.title
@@ -52,14 +64,28 @@ hist xs' opt = renderableToFile def (toRenderable layout)
             $ layout_x_axis . laxis_generate .~ autoIndexAxis (fmap show labels)
             $ layout_x_axis . laxis_title .~ opt^.common.xlab
             $ layout_y_axis . laxis_title .~ opt^.common.ylab
+            $ layout_left_axis_visibility.axis_show_ticks .~ False
             $ def ∷ Layout PlotIndex Double
         bars = 
-            plot_bars_values .~ addIndexes (fmap return $ counts)
+            plot_bars_values .~ addIndexes (return <$> counts)
             $ plot_bars_spacing .~ BarsFixGap 0 0
             $ plot_bars_alignment .~ BarsLeft
+            $ plot_bars_item_styles .~ (map (\ x → (FillStyleSolid $ mkColor x (opt^.common.opacity), Just def)) $ cycle (opt^.common.col))
             $ def
 
         xs = G.toList xs'
         numBins = (opt^.breaks) xs
         labels = autoSteps numBins xs
-        counts = V.toList $ histogram_ (length labels) (minimum labels) (maximum labels) xs'
+        counts = V.toList $ histogram_ (length labels - 1) (minimum labels) (maximum labels) xs'
+
+-- Plot Histogram to GTK window
+hist ∷ G.Vector v Double ⇒ v Double → HistOption → IO ()
+hist x = swap renderableToWindow 720 720 . toRenderable . hist_ x
+    where 
+        swap = swap_2_3 . swap_1_2
+        swap_1_2 = flip
+        swap_2_3 = (.) flip
+
+-- Plot Histogram to file
+hist' ∷ G.Vector v Double ⇒ v Double → HistOption → String → IO (PickFn ())
+hist' xs opt = renderableToFile def (toRenderable $ hist_ xs opt)
