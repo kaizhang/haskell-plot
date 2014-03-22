@@ -6,14 +6,11 @@ Making histogram in Haskell
 Example:
 
 ```haskell
-{-# LANGUAGE OverloadedStrings, UnicodeSyntax, TemplateHaskell, BangPatterns #-}
-
 import Type
 import Hist
 import Control.Lens
 import DataSets
-import Data.Default.Class
-
+import Data.Default
 
 main = hist' sample (
         common .~ (

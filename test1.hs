@@ -1,11 +1,10 @@
-{-# LANGUAGE OverloadedStrings, UnicodeSyntax, TemplateHaskell, BangPatterns #-}
+{-# LANGUAGE UnicodeSyntax #-}
 
 import Type
 import Hist
 import Control.Lens
 import DataSets
-import Data.Default.Class
-
+import Data.Default
 
 main = hist' sample (
         common .~ (
@@ -13,6 +12,6 @@ main = hist' sample (
             $ xlab .~ "Individual Height"
             $ col .~ ["royalblue"]
             $ opacity .~ 0.8 
-            $ def) 
+            $ def)
         $ def) "test1.png"
 
