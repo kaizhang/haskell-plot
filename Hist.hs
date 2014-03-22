@@ -61,9 +61,9 @@ hist_ xs' opt = layout
         layout = 
             layout_title .~ opt^.common^.title
             $ layout_plots .~ [plotBars bars]
-            $ layout_x_axis . laxis_generate .~ autoIndexAxis (fmap show labels)
+            $ layout_x_axis . laxis_generate .~ indexAxis
             $ layout_x_axis . laxis_title .~ opt^.common.xlab
-            $ layout_y_axis . laxis_title .~ opt^.common.ylab
+            $ layout_y_axis . laxis_title .~ "Frequency"
             $ layout_left_axis_visibility.axis_show_ticks .~ False
             $ def ∷ Layout PlotIndex Double
         bars = 
@@ -78,9 +78,25 @@ hist_ xs' opt = layout
         labels = autoSteps numBins xs
         counts = V.toList $ histogram_ (length labels - 1) (minimum labels) (maximum labels) xs'
 
+        indexAxis :: Integral i => [i] -> AxisData i
+        indexAxis vs = AxisData {
+            _axis_visibility = def { _axis_show_ticks = False },
+            _axis_viewport = vport,
+            _axis_tropweiv = invport,
+            _axis_ticks    = [],
+            _axis_labels   = [zip [0..] $ fmap show labels],
+            _axis_grid     = []
+            }
+          where
+            vport r i = linMap id ( fromIntegral imin - 0.5
+                                  , fromIntegral imax + 1.5) r (fromIntegral i)
+            invport r z = invLinMap round fromIntegral (imin, imax) r z
+            imin = minimum vs
+            imax = maximum vs
+
 -- Plot Histogram to GTK window
 hist ∷ G.Vector v Double ⇒ v Double → HistOption → IO ()
-hist x = swap renderableToWindow 720 720 . toRenderable . hist_ x
+hist x = swap renderableToWindow 480 480 . toRenderable . hist_ x
     where 
         swap = swap_2_3 . swap_1_2
         swap_1_2 = flip
