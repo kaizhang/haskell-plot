@@ -1,7 +1,7 @@
 Histogram-haskell
 =================
 
-Making histogram in Haskell
+Simple plot interface based on [haskell-chart](https://github.com/timbod7/haskell-chart).
 
 Example:
 
@@ -23,3 +23,20 @@ main = hist' sample (
 ```
 
 ![](test1.png)
+
+```haskell
+import Type
+import Point
+import Control.Lens
+import DataSets
+import Data.Default
+
+main = points' (Nothing,sample) (
+        common .~ (
+            xlab .~ "Individual Height"
+            $ col .~ "red"
+            $ def)
+        $ def) "test2.png"
+```
+
+![](test2.png)

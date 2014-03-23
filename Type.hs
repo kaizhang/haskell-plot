@@ -8,6 +8,8 @@ module Type (
     , opacity
     , col
     , mkColor
+    , width
+    , height
     ) where
 
 import Control.Lens
@@ -21,7 +23,9 @@ data PlotOption = PlotOption {
     , _xlab ∷ String
     , _ylab ∷ String
     , _opacity ∷ Double
-    , _col ∷ [String]
+    , _col ∷ String
+    , _width ∷ Int
+    , _height ∷ Int
     } deriving (Show)
 
 makeLenses ''PlotOption
@@ -32,7 +36,9 @@ instance Default PlotOption where
         , _xlab = []
         , _ylab = []
         , _opacity = 1.0
-        , _col = ["blue", "red", "green", "yellow", "cyan", "magenta"]
+        , _col = "blue"
+        , _width = 480
+        , _height = 480
     }
 
 mkColor ∷ String → Double → AlphaColour Double

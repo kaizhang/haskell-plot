@@ -38,7 +38,6 @@ instance Default HistOption where
         , _breaks = freedmanDiaconis
     }
 
---http://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule
 freedmanDiaconis ∷ BreakRule
 freedmanDiaconis xs = round ((maximum xs - minimum xs) / binSzie)
     where
@@ -55,22 +54,22 @@ squareRoot = round . sqrt . fromIntegral . length
 riceRule ∷ BreakRule
 riceRule xs = ceiling (2*(fromIntegral $ length xs)**(1/3))
 
-hist_ ∷ G.Vector v Double ⇒ v Double → HistOption → Layout PlotIndex Double
+hist_ ∷ G.Vector v Double ⇒ v Double → HistOption → Layout Double Double
 hist_ xs' opt = layout
     where
         layout = 
             layout_title .~ opt^.common^.title
             $ layout_plots .~ [plotBars bars]
-            $ layout_x_axis . laxis_generate .~ indexAxis
+            $ layout_x_axis . laxis_generate .~ (const xAxis)
             $ layout_x_axis . laxis_title .~ opt^.common.xlab
             $ layout_y_axis . laxis_title .~ "Frequency"
-            $ layout_left_axis_visibility.axis_show_ticks .~ False
-            $ def ∷ Layout PlotIndex Double
+            $ layout_bottom_axis_visibility.axis_show_ticks .~ False
+            $ def ∷ Layout Double Double
         bars = 
-            plot_bars_values .~ addIndexes (return <$> counts)
+            plot_bars_values .~ (zip labels (return <$> counts))
             $ plot_bars_spacing .~ BarsFixGap 0 0
             $ plot_bars_alignment .~ BarsLeft
-            $ plot_bars_item_styles .~ (map (\ x → (FillStyleSolid $ mkColor x (opt^.common.opacity), Just def)) $ cycle (opt^.common.col))
+            $ plot_bars_item_styles .~ [(FillStyleSolid $ mkColor (opt^.common.col) (opt^.common.opacity), Just def)]
             $ def
 
         xs = G.toList xs'
@@ -78,30 +77,29 @@ hist_ xs' opt = layout
         labels = autoSteps numBins xs
         counts = V.toList $ histogram_ (length labels - 1) (minimum labels) (maximum labels) xs'
 
-        indexAxis :: Integral i => [i] -> AxisData i
-        indexAxis vs = AxisData {
-            _axis_visibility = def { _axis_show_ticks = False },
-            _axis_viewport = vport,
-            _axis_tropweiv = invport,
-            _axis_ticks    = [],
-            _axis_labels   = [zip [0..] $ fmap show labels],
-            _axis_grid     = []
+        xAxis ∷ AxisData Double
+        xAxis = AxisData {
+            _axis_visibility = def,
+            _axis_viewport = vmap (min', max'),
+            _axis_tropweiv = invmap (min', max'),
+            _axis_ticks = [ (v,-5) | v ← newLabels ],
+            _axis_grid = labels,
+            _axis_labels = [[ (v, show v) | v ← newLabels ]]
             }
-          where
-            vport r i = linMap id ( fromIntegral imin - 0.5
-                                  , fromIntegral imax + 1.5) r (fromIntegral i)
-            invport r z = invLinMap round fromIntegral (imin, imax) r z
-            imin = minimum vs
-            imax = maximum vs
+                where
+                    newLabels = let k = ceiling (fromIntegral (length labels) / 5)
+                                    l = filter (\(i,_) → (i `mod` k) == 0) $ zip [1..] labels
+                                 in snd $ unzip l
+                    halfW = (labels!!1 - labels!!0) / 2
+                    min' = minimum labels - halfW
+                    max' = maximum labels + halfW
 
 -- Plot Histogram to GTK window
 hist ∷ G.Vector v Double ⇒ v Double → HistOption → IO ()
-hist x = swap renderableToWindow 480 480 . toRenderable . hist_ x
-    where 
-        swap = swap_2_3 . swap_1_2
-        swap_1_2 = flip
-        swap_2_3 = (.) flip
+hist x opt = renderableToWindow (toRenderable $ hist_ x opt) (opt^.common.width) (opt^.common.height)
 
 -- Plot Histogram to file
 hist' ∷ G.Vector v Double ⇒ v Double → HistOption → String → IO (PickFn ())
-hist' xs opt = renderableToFile def (toRenderable $ hist_ xs opt)
+hist' xs opt = renderableToFile
+    (fo_size .~ (opt^.common.width, opt^.common.height) $ def)
+    (toRenderable $ hist_ xs opt)
