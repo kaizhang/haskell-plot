@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, UnicodeSyntax, TemplateHaskell, BangPatterns #-}
 
-module Type (
+module Graphics.Rendering.HPlot.Type (
     PlotOption
     , title
     , xlab
