@@ -5,6 +5,7 @@ module Graphics.Rendering.HPlot.Type (
     , title
     , xlab
     , ylab
+    , xlim
     , opacity
     , col
     , mkColor
@@ -22,6 +23,7 @@ data PlotOption = PlotOption {
     _title ∷ String
     , _xlab ∷ String
     , _ylab ∷ String
+    , _xlim ∷ (Double, Double)
     , _opacity ∷ Double
     , _col ∷ String
     , _width ∷ Int
@@ -35,6 +37,7 @@ instance Default PlotOption where
         _title = []
         , _xlab = []
         , _ylab = []
+        , _xlim = (0, -1)
         , _opacity = 1.0
         , _col = "blue"
         , _width = 480

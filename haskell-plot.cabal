@@ -5,7 +5,7 @@ name:                haskell-plot
 version:             0.1.0.0
 -- synopsis:            
 -- description:         
-homepage:            https://github.com/kaizhang/Histogram-haskell
+homepage:            https://github.com/kaizhang/haskell-plot
 license:             GPL
 license-file:        LICENSE
 author:              Kai Zhang <kai@kzhang.org>
