@@ -18,9 +18,11 @@ cabal-version:       >=1.8
 library
   exposed-modules:     
     Graphics.Rendering.HPlot,
-    Graphics.Rendering.HPlot.Type,
+    Graphics.Rendering.HPlot.Types,
     Graphics.Rendering.HPlot.Hist,
-    Graphics.Rendering.HPlot.Point,
+    Graphics.Rendering.HPlot.Points,
+    Graphics.Rendering.HPlot.Bars,
+    Graphics.Rendering.HPlot.Lines,
     Graphics.Rendering.HPlot.DataSet
 
   -- other-modules:       
