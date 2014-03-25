@@ -9,38 +9,43 @@ Examples:
 import Control.Lens
 import Data.Default
 import Graphics.Rendering.HPlot
+import Data.DataSets (johnsonjohnson)
 
-main = hist' (
-    h_col .~ "royalblue"
-    $ h_opacity .~ 0.8
-    $ def) sample "test1.png"
+main = do
+    (names, x:y:_) <- johnsonjohnson
+
+    plot' (
+        title .~ "Quarterly Earnings per Johnson & Johnson" 
+        $ xlab .~ head names
+        $ ylab .~ (names!!1)
+        $ def)
+        (sequence [
+            line def,
+            points (
+                p_col .~ "red" 
+                $ p_shape .~ 'x'
+                $ def)
+            ]
+            (Just x, y)) "e1.png"
 ```
 
-![](examples/test1.png)
+![](examples/e1.png)
 
 ```haskell
-p_opt :: PointOption
-p_opt = p_shape .~ '^'
-    $ p_col .~ "red"
-    $ p_radius .~ 4
-    $ def
+import Control.Lens
+import Data.Default
+import Graphics.Rendering.HPlot
+import Data.DataSets (rivers)
 
-l_opt :: LineOption
-l_opt = l_type .~ 6
-    $ def
+main = do
+    (_, x:_) <- rivers
 
-main = plot' def (sequence [points p_opt, line l_opt] (Nothing,sample)) "test2.png"
+    hist' (
+        h_title .~ "Lengths of Major North American Rivers" 
+        $ h_xlab .~ "length"
+        $ h_col .~ "royalblue"
+        $ h_opacity .~ 0.8
+        $ def) x "e2.png"
 ```
 
-![](examples/test2.png)
-
-```haskell
-flower' = (_1 %~ Just $ flower)
-
-main = plot' def (sequence [
-    points (p_col .~ "red" $ p_opacity .~ 0.5 $ def),
-    line (l_col .~ "royalblue" $ def)
-    ] flower') "test3.png"
-```
-
-![](examples/test3.png)
+![](examples/e2.png)

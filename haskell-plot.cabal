@@ -22,8 +22,7 @@ library
     Graphics.Rendering.HPlot.Hist,
     Graphics.Rendering.HPlot.Points,
     Graphics.Rendering.HPlot.Bars,
-    Graphics.Rendering.HPlot.Lines,
-    Graphics.Rendering.HPlot.DataSet
+    Graphics.Rendering.HPlot.Lines
 
   -- other-modules:       
   build-depends:
