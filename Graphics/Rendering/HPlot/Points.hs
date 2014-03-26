@@ -8,6 +8,7 @@ import Graphics.Rendering.Chart
 import Control.Lens
 import Data.Default
 import Graphics.Rendering.HPlot.Types
+import Data.Maybe
 
 data PointOption = PointOption {
     _p_radius ∷ Double
@@ -46,11 +47,11 @@ toPointStyle opt = case () of
             color = mkColor (opt^.p_col) (opt^.p_opacity)
             thick = opt^.p_thickness
 
-points ∷ F.Foldable f ⇒ PointOption → (Maybe (f Double), f Double) → Plot Double Double
-points opt (x,y) = toPlot $ plot_points_values .~ x_y
-    $ plot_points_style .~ toPointStyle opt
-    $ def
-        where
-            x_y = case x of
-                Nothing → zip [1..] $ F.toList y
-                Just x' → zip (F.toList x') $ F.toList y
+points ∷ F.Foldable f ⇒ PointOption → (Maybe (f Double), f Double) → EitherPlot
+points opt (x, y) | isNothing x = Left $ mkPlot $ addIndexes y'
+                  | otherwise = Right $ mkPlot $ zip (F.toList $ fromJust x) y'
+    where
+        y' = F.toList y
+        mkPlot x_y = toPlot $ plot_points_values .~ x_y
+            $ plot_points_style .~ toPointStyle opt
+            $ def

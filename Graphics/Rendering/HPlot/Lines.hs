@@ -8,6 +8,7 @@ import Graphics.Rendering.Chart
 import Control.Lens
 import Data.Default
 import Graphics.Rendering.HPlot.Types
+import Data.Maybe
 
 data LineOption = LineOption {
     _l_width ∷ Double
@@ -42,11 +43,11 @@ toLineStyle opt = line_width .~ opt^.l_width
         _ → [])
     $ def
 
-line ∷ F.Foldable f ⇒ LineOption → (Maybe (f Double), f Double) → Plot Double Double
-line opt (x,y) = toPlot $ plot_lines_values .~ [x_y]
-    $ plot_lines_style .~ toLineStyle opt
-    $ def
-        where
-            x_y = case x of
-                Nothing → zip [1..] $ F.toList y
-                Just x' → zip (F.toList x') $ F.toList y
+line ∷ F.Foldable f ⇒ LineOption → (Maybe (f Double), f Double) → EitherPlot
+line opt (x,y) | isNothing x = Left $ mkPlot $ addIndexes $ y'
+               | otherwise = Right $ mkPlot $ zip (F.toList $ fromJust x) y'
+    where
+        y' = F.toList y
+        mkPlot x_y = toPlot $ plot_lines_values .~ [x_y]
+            $ plot_lines_style .~ toLineStyle opt
+            $ def

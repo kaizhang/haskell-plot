@@ -10,12 +10,9 @@ main = do
         title .~ "Quarterly Earnings per Johnson & Johnson" 
         $ xlab .~ head names
         $ ylab .~ (names!!1)
-        $ def)
-        (sequence [
+        $ def) ( sequence [
             line def,
             points (
                 p_col .~ "red" 
                 $ p_shape .~ 'x'
-                $ def)
-            ]
-            (Just x, y)) "e1.png"
+                $ def)] (Just x, y) ) "e1.png"

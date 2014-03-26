@@ -62,21 +62,18 @@ instance Default HistOption where
 
 convertOpt ∷ HistOption → (PlotOption, BarOption)
 convertOpt opt = (
-    PlotOption {
-        _title = opt^.h_title
-        , _xlab = opt^.h_xlab
-        , _ylab = opt^.h_ylab
-        , _xlim = opt^.h_xlim
-        , _width = opt^.h_width
-        , _height = opt^.h_height
-    },
-    BarOption {
-        _thickness = 1
-        , _opacity = opt^.h_opacity
-        , _col = [opt^.h_col]
-        , _align = BarsLeft
-        , _space = 0
-    })
+    title .~ opt^.h_title
+    $ xlab .~ opt^.h_xlab
+    $ ylab .~ opt^.h_ylab
+    $ xlim .~ opt^.h_xlim
+    $ width .~ opt^.h_width
+    $ height .~ opt^.h_height
+    $ def,
+    b_opacity .~ opt^.h_opacity
+    $ b_cols .~ [opt^.h_col]
+    $ b_align .~ BarsLeft
+    $ b_space .~ 0
+    $ def)
 
 -- Adapted from http://hackage.haskell.org/package/statistics-0.11.0.0/docs/Statistics-Quantile.html
 quantile ∷ Int        -- ^ /k/, the desired quantile.
@@ -140,8 +137,8 @@ squareRoot = round . (sqrt ∷ Double → Double) . fromIntegral . length
 riceRule ∷ BreakRule
 riceRule xs = ceiling (2*(fromIntegral $ length xs ∷ Double)**(1/3))
 
-hist_ ∷ F.Foldable f ⇒ HistOption → f Double → Layout Double Double
-hist_ opt xs' = layout_x_axis.laxis_generate .~ const xAxis $ plot_ popt [bs]
+hist_ ∷ F.Foldable f ⇒ HistOption → f Double → EitherLayout
+hist_ opt xs' = mapped.layout_x_axis.laxis_generate .~ const xAxis $ plot_ popt [bs]
     where
         (popt, bopt) = convertOpt opt
         bs = bars bopt (Just labels, [counts])
@@ -169,9 +166,12 @@ hist_ opt xs' = layout_x_axis.laxis_generate .~ const xAxis $ plot_ popt [bs]
                     max' = maximum labels + halfW
 
 hist ∷ F.Foldable f ⇒ HistOption → f Double → IO ()
-hist opt xs = renderableToWindow (toRenderable $ hist_ opt xs) (opt^.h_width) (opt^.h_height)
+hist opt xs = either f f (hist_ opt xs)
+    where f x = renderableToWindow (toRenderable x) (opt^.h_width) (opt^.h_height)
 
 hist' ∷ F.Foldable f ⇒ HistOption → f Double → String → IO (PickFn ())
-hist' opt xs = renderableToFile
-    (fo_size .~ (opt^.h_width, opt^.h_height) $ def)
-    (toRenderable $ hist_ opt xs)
+hist' opt xs = either f f (hist_ opt xs)
+    where 
+        f x = renderableToFile
+            (fo_size .~ (opt^.h_width, opt^.h_height) $ def)
+            (toRenderable x)

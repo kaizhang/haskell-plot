@@ -18,15 +18,12 @@ main = do
         title .~ "Quarterly Earnings per Johnson & Johnson" 
         $ xlab .~ head names
         $ ylab .~ (names!!1)
-        $ def)
-        (sequence [
+        $ def) ( sequence [
             line def,
             points (
                 p_col .~ "red" 
                 $ p_shape .~ 'x'
-                $ def)
-            ]
-            (Just x, y)) "e1.png"
+                $ def)] (Just x, y) ) "e1.png"
 ```
 
 ![](examples/e1.png)
@@ -49,3 +46,22 @@ main = do
 ```
 
 ![](examples/e2.png)
+
+```haskell
+import Control.Lens
+import Data.Default
+import Graphics.Rendering.HPlot
+import Data.DataSets (worldphones)
+
+main = do
+    (label, ys) <- worldphones
+
+    plot' (labels .~ map show [1951..1961]
+        $ title .~ "World phones data: log scale for response"
+        $ xlab .~ "Years"
+        $ ylab .~ "Number of telephones (1000's)"
+        $ def) [
+            bars (b_legend .~ label $ def) (Nothing, ys)] "e3.png"
+```
+
+![](examples/e3.png)

@@ -12,6 +12,9 @@ module Graphics.Rendering.HPlot.Types (
     , plot_
     , plot
     , plot'
+    , EitherPlot
+    , EitherLayout
+    , labels
     ) where
 
 import Graphics.Rendering.Chart
@@ -21,10 +24,12 @@ import Control.Lens
 import Data.Default
 import Data.Colour
 import Data.Colour.Names
+import Data.Either
 import Data.Maybe
 
 data PlotOption = PlotOption {
     _title ∷ String
+    , _labels ∷ [String]
     , _xlab ∷ String
     , _ylab ∷ String
     , _xlim ∷ (Double, Double)
@@ -37,6 +42,7 @@ makeLenses ''PlotOption
 instance Default PlotOption where
     def = PlotOption {
         _title = []
+        , _labels = []
         , _xlab = []
         , _ylab = []
         , _xlim = (0, -1)
@@ -44,25 +50,34 @@ instance Default PlotOption where
         , _height = 480
     }
 
+type EitherPlot = Either (Plot PlotIndex Double) (Plot Double Double)
+type EitherLayout = Either (Layout PlotIndex Double) (Layout Double Double)
+
 mkColor ∷ String → Double → AlphaColour Double
 mkColor c = withOpacity (fromMaybe blue $ readColourName c)
 
-plot_ ∷ PlotOption → [Plot Double Double] → Layout Double Double
-plot_ opt ps = 
-    layout_title .~ opt^.title
-        $ layout_plots .~ ps
-        $ layout_x_axis .~ (
-            laxis_title .~ opt^.xlab
-            $ if uncurry (>=) (opt^.xlim)
-                 then def
-                 else laxis_generate .~ scaledAxis def (opt^.xlim) $ def)
-             $ layout_y_axis . laxis_title .~ opt^.ylab
-             $ def
+plot_ ∷ PlotOption → [EitherPlot] → EitherLayout
+plot_ opt ps | null ls = Right $ toLayout rs axisFnRight
+             | otherwise = Left $ toLayout ls axisFnLeft
+    where
+        toLayout x axisFn = layout_title .~ opt^.title
+            $ layout_plots .~ x
+            $ layout_x_axis .~ (
+                laxis_title .~ opt^.xlab
+                $ laxis_generate .~ axisFn $ def)
+            $ layout_y_axis . laxis_title .~ opt^.ylab
+            $ def
 
-plot ∷ PlotOption → [Plot Double Double] → IO ()
-plot opt ps = renderableToWindow (toRenderable $ plot_ opt ps) (opt^.width) (opt^.height)
+        (ls, rs) = partitionEithers ps
+        axisFnLeft = autoIndexAxis (opt^.labels)
+        axisFnRight = if uncurry (>=) (opt^.xlim)
+                         then autoAxis
+                         else scaledAxis def (opt^.xlim)
 
-plot' ∷ PlotOption → [Plot Double Double] → String → IO (PickFn ())
-plot' opt ps = renderableToFile 
-    (fo_size .~ (opt^.width, opt^.height) $ def)
-    (toRenderable $ plot_ opt ps)
+plot ∷ PlotOption → [EitherPlot] → IO ()
+plot opt ps = either f f (plot_ opt ps)
+    where f x = renderableToWindow (toRenderable x) (opt^.width) (opt^.height)
+
+plot' ∷ PlotOption → [EitherPlot] → String → IO (PickFn ())
+plot' opt ps = either f f (plot_ opt ps)
+    where f x = renderableToFile (fo_size .~ (opt^.width, opt^.height) $ def) (toRenderable x)
