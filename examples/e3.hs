@@ -11,5 +11,5 @@ main = do
         $ xlab .~ "Years"
         $ ylab .~ "Number of telephones (1000's)"
         $ def) [
-            bars (b_legend .~ label $ def) (Nothing, ys)] "e3.png"
+            bars (legend .~ label $ def) (Nothing, ys)] "e3.png"
 

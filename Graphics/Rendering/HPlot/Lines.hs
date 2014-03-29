@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, UnicodeSyntax, BangPatterns, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, UnicodeSyntax #-}
 {-# LANGUAGE FlexibleContexts #-}
 
 module Graphics.Rendering.HPlot.Lines where
@@ -8,32 +8,13 @@ import Graphics.Rendering.Chart
 import Control.Lens
 import Data.Default
 import Graphics.Rendering.HPlot.Types
+import Graphics.Rendering.HPlot.Utils
 import Data.Maybe
 
-data LineOption = LineOption {
-    _l_width ∷ Double
-    , _l_col ∷ String
-    , _l_opacity ∷ Double
-    , _l_type ∷ Int
-    , _l_join ∷ LineJoin
-    }
-
-makeLenses ''LineOption
-
-instance Default LineOption where
-    def = LineOption {
-        _l_width = 1
-        , _l_opacity = 1.0
-        , _l_col = "blue"
-        , _l_type = 1
-        , _l_join = LineJoinMiter
-    }
-
 toLineStyle ∷ LineOption → LineStyle
-toLineStyle opt = line_width .~ opt^.l_width
-    $ line_color .~ mkColor (opt^.l_col) (opt^.l_opacity)
-    $ line_join .~ opt^.l_join
-    $ line_dashes .~ (case opt^.l_type of
+toLineStyle opt = line_width .~ opt^.linewidth
+    $ line_color .~ mkColor (opt^.col) (opt^.opacity)
+    $ line_dashes .~ (case opt^.lty of
         1 → []
         2 → [5,5]
         3 → [2,4]
@@ -44,7 +25,7 @@ toLineStyle opt = line_width .~ opt^.l_width
     $ def
 
 line ∷ F.Foldable f ⇒ LineOption → (Maybe (f Double), f Double) → EitherPlot
-line opt (x,y) | isNothing x = Left $ mkPlot $ addIndexes $ y'
+line opt (x,y) | isNothing x = Left $ mkPlot $ addIndexes y'
                | otherwise = Right $ mkPlot $ zip (F.toList $ fromJust x) y'
     where
         y' = F.toList y

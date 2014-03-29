@@ -13,6 +13,6 @@ main = do
         $ def) ( sequence [
             line def,
             points (
-                p_col .~ "red" 
-                $ p_shape .~ 'x'
+                col .~ "red" 
+                $ shape .~ 'x'
                 $ def)] (Just x, y) ) "e1.png"

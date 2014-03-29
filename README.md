@@ -21,8 +21,8 @@ main = do
         $ def) ( sequence [
             line def,
             points (
-                p_col .~ "red" 
-                $ p_shape .~ 'x'
+                col .~ "red" 
+                $ shape .~ 'x'
                 $ def)] (Just x, y) ) "e1.png"
 ```
 
@@ -38,10 +38,10 @@ main = do
     (_, x:_) <- rivers
 
     hist' (
-        h_title .~ "Lengths of Major North American Rivers" 
-        $ h_xlab .~ "length"
-        $ h_col .~ "royalblue"
-        $ h_opacity .~ 0.8
+        title .~ "Lengths of Major North American Rivers" 
+        $ xlab .~ "length"
+        $ col .~ "royalblue"
+        $ opacity .~ 0.8
         $ def) x "e2.png"
 ```
 
@@ -61,7 +61,7 @@ main = do
         $ xlab .~ "Years"
         $ ylab .~ "Number of telephones (1000's)"
         $ def) [
-            bars (b_legend .~ label $ def) (Nothing, ys)] "e3.png"
+            bars (legend .~ label $ def) (Nothing, ys)] "e3.png"
 ```
 
 ![](examples/e3.png)

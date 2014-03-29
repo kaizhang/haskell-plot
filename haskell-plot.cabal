@@ -19,10 +19,12 @@ library
   exposed-modules:     
     Graphics.Rendering.HPlot,
     Graphics.Rendering.HPlot.Types,
+    Graphics.Rendering.HPlot.Plot,
     Graphics.Rendering.HPlot.Hist,
     Graphics.Rendering.HPlot.Points,
     Graphics.Rendering.HPlot.Bars,
     Graphics.Rendering.HPlot.Lines
+    Graphics.Rendering.HPlot.Utils
 
   -- other-modules:       
   build-depends:
