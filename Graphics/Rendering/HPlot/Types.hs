@@ -18,17 +18,19 @@ module Graphics.Rendering.HPlot.Types (
     , xlab
     , ylab
     , xlim
+    , ylim
     , width
     , height
+    , grid
     , cols
     , opacity
     , align
     , space
     , style
     , legend
-    , linewidth
     , col
     , lty
+    , lwd
     , radius
     , shape
     , breaks
@@ -48,8 +50,10 @@ data PlotOption = PlotOption {
     , _plotXlab ∷ String
     , _plotYlab ∷ String
     , _plotXlim ∷ (Double, Double)
+    , _plotYlim ∷ (Double, Double)
     , _plotWidth ∷ Int
     , _plotHeight ∷ Int
+    , _plotGrid ∷ Char
     } deriving (Show)
 
 makeFields ''PlotOption
@@ -61,8 +65,10 @@ instance Default PlotOption where
         , _plotXlab = []
         , _plotYlab = []
         , _plotXlim = (0, -1)
+        , _plotYlim = (0, -1)
         , _plotWidth = 480
         , _plotHeight = 480
+        , _plotGrid = 'b'
     }
 
 data BarOption = BarOption {
@@ -87,10 +93,10 @@ instance Default BarOption where
     }
 
 data LineOption = LineOption {
-    _lineLinewidth ∷ Double
-    , _lineCol ∷ String
+      _lineCol ∷ String
     , _lineOpacity ∷ Double
     , _lineLty ∷ Int
+    , _lineLwd ∷ Double
     , lineJoin ∷ LineJoin
     }
 
@@ -98,10 +104,10 @@ makeFields ''LineOption
 
 instance Default LineOption where
     def = LineOption {
-        _lineLinewidth = 1
-        , _lineOpacity = 1.0
+          _lineOpacity = 1.0
         , _lineCol = "blue"
         , _lineLty = 1
+        , _lineLwd = 1
         , lineJoin = LineJoinMiter
     }
 
@@ -110,7 +116,7 @@ data PointOption = PointOption {
     , _pointShape ∷ Char
     , _pointCol ∷ String
     , _pointOpacity ∷ Double
-    , _pointLinewidth ∷ Double
+    , _pointLwd ∷ Double
     }
 
 makeFields ''PointOption
@@ -119,7 +125,7 @@ instance Default PointOption where
     def = PointOption {
         _pointRadius = 3
         , _pointShape = '.'
-        , _pointLinewidth = 1
+        , _pointLwd = 1
         , _pointOpacity = 1.0
         , _pointCol = "blue"
     }
@@ -133,6 +139,8 @@ data HistOption = HistOption {
     , _histWidth ∷ Int
     , _histHeight ∷ Int
     , _histXlim ∷ (Double, Double)
+    , _histYlim ∷ (Double, Double)
+    , _histGrid ∷ Char
     , _histCol ∷ String
     , _histOpacity ∷ Double
     , _histBreaks ∷ BreakRule
@@ -148,6 +156,8 @@ instance Default HistOption where
         , _histWidth = 480
         , _histHeight = 480
         , _histXlim = (0, -1)
+        , _histYlim = (0, -1)
+        , _histGrid = 'y'
         , _histCol = "blue"
         , _histOpacity = 1.0
         , _histBreaks = freedmanDiaconis

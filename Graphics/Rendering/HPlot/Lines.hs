@@ -12,7 +12,7 @@ import Graphics.Rendering.HPlot.Utils
 import Data.Maybe
 
 toLineStyle ∷ LineOption → LineStyle
-toLineStyle opt = line_width .~ opt^.linewidth
+toLineStyle opt = line_width .~ opt^.lwd
     $ line_color .~ mkColor (opt^.col) (opt^.opacity)
     $ line_dashes .~ (case opt^.lty of
         1 → []

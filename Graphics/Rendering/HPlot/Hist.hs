@@ -27,8 +27,10 @@ convertOpt opt = (
     $ xlab .~ opt^.xlab
     $ ylab .~ opt^.ylab
     $ xlim .~ opt^.xlim
+    $ ylim .~ opt^.ylim
     $ width .~ opt^.width
     $ height .~ opt^.height
+    $ grid .~ opt^.grid
     $ def,
     opacity .~ opt^.opacity
     $ cols .~ [opt^.col]

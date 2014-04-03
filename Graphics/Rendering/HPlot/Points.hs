@@ -27,7 +27,7 @@ toPointStyle opt = case () of
             s = opt^.shape
             r = opt^.radius
             color = mkColor (opt^.col) (opt^.opacity)
-            thick = opt^.linewidth
+            thick = opt^.lwd
 
 points ∷ F.Foldable f ⇒ PointOption → (Maybe (f Double), f Double) → EitherPlot
 points opt (x, y) | isNothing x = Left $ mkPlot $ addIndexes y'
