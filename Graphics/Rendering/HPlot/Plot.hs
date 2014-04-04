@@ -62,6 +62,6 @@ plot ∷ PlotOption → [EitherPlot] → IO ()
 plot opt ps = either f f (plot_ opt ps)
     where f x = renderableToWindow (toRenderable x) (opt^.width) (opt^.height)
 
-plot' ∷ PlotOption → [EitherPlot] → String → IO (PickFn ())
-plot' opt ps = either f f (plot_ opt ps)
+plot' ∷ PlotOption → [EitherPlot] → String → IO ()
+plot' opt ps flname = either f f (plot_ opt ps) flname >> return ()
     where f x = renderableToFile (fo_size .~ (opt^.width, opt^.height) $ def) (toRenderable x)

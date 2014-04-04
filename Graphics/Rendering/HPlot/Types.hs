@@ -11,6 +11,7 @@ module Graphics.Rendering.HPlot.Types (
     , LineOption
     , PointOption
     , HistOption
+    , HeatMapOption
 
     -- | Lens
     , title
@@ -34,6 +35,9 @@ module Graphics.Rendering.HPlot.Types (
     , radius
     , shape
     , breaks
+    , labRow
+    , labCol
+    , palette
 
     , EitherPlot
     , EitherLayout
@@ -41,6 +45,8 @@ module Graphics.Rendering.HPlot.Types (
 
 import Graphics.Rendering.Chart
 import Graphics.Rendering.HPlot.Utils
+import Data.Colour
+import Data.Colour.SRGB
 import Control.Lens
 import Data.Default
 
@@ -123,12 +129,62 @@ makeFields ''PointOption
 
 instance Default PointOption where
     def = PointOption {
-        _pointRadius = 3
+          _pointRadius = 3
         , _pointShape = '.'
         , _pointLwd = 1
         , _pointOpacity = 1.0
         , _pointCol = "blue"
     }
+
+data HeatMapOption = HeatMapOption {
+      _heatmapLabRow ∷ [String]
+    , _heatmapLabCol ∷ [String]
+    , _heatmapSpace ∷ Double
+    , _heatmapTitle ∷ String
+    , _heatmapXlab ∷ String
+    , _heatmapYlab ∷ String
+    , _heatmapWidth ∷ Int
+    , _heatmapHeight ∷ Int
+    , _heatmapPalette ∷ [Colour Double]
+    , _heatmapOpacity ∷ Double
+}
+
+makeFields ''HeatMapOption
+
+instance Default HeatMapOption where
+    def = HeatMapOption {
+          _heatmapLabRow = []
+        , _heatmapLabCol = []
+        , _heatmapSpace = 1
+        , _heatmapTitle = ""
+        , _heatmapXlab = ""
+        , _heatmapYlab = ""
+        , _heatmapWidth = 480
+        , _heatmapHeight = 480
+        , _heatmapPalette = warmCols
+        , _heatmapOpacity = 1
+    }
+
+-- | print safe
+warmCols ∷ [Colour Double]
+warmCols = [
+    sRGB24 255 255 178,
+    sRGB24 254 217 118,
+    sRGB24 254 178 76,
+    sRGB24 253 141 60,
+    sRGB24 240 59 32,
+    sRGB24 189 0 38
+    ]
+
+coolCols ∷ [Colour Double]
+coolCols = [
+    sRGB24 255 255 204,
+    sRGB24 199 233 180,
+    sRGB24 127 205 187,
+    sRGB24 65 182 196,
+    sRGB24 44 127 184,
+    sRGB24 37 52 148
+    ]
 
 type BreakRule = [Double] → Int
 

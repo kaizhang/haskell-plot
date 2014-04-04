@@ -27,9 +27,12 @@ library
     Graphics.Rendering.HPlot.Points,
     Graphics.Rendering.HPlot.Bars,
     Graphics.Rendering.HPlot.Lines,
-    Graphics.Rendering.HPlot.Utils
+    Graphics.Rendering.HPlot.Utils,
+    Graphics.Rendering.HPlot.HeatMap
 
-  -- other-modules:       
+  other-modules:       
+    Graphics.Rendering.HPlot.HeatMap.Internal
+
   build-depends:
     base >=4 && < 5
     , lens >= 3.10
