@@ -39,6 +39,10 @@ module Graphics.Rendering.HPlot.Types (
     , labCol
     , palette
 
+    , with
+    , (.~)
+    , (&)
+
     , EitherPlot
     , EitherLayout
     ) where
@@ -49,6 +53,9 @@ import Data.Colour
 import Data.Colour.SRGB
 import Control.Lens
 import Data.Default
+
+with ∷ Default a ⇒ a
+with = def
 
 data PlotOption = PlotOption {
     _plotTitle ∷ String

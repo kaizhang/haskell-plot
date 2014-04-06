@@ -39,11 +39,11 @@ convertOpt opt = (
     $ def)
 
 
-hist_ ∷ F.Foldable f ⇒ HistOption → f Double → EitherLayout
-hist_ opt xs' = mapped.layout_x_axis.laxis_generate .~ const xAxis $ plot_ popt [bs]
+hist_ ∷ F.Foldable f ⇒ f Double → HistOption → EitherLayout
+hist_ xs' opt = mapped.layout_x_axis.laxis_generate .~ const xAxis $ plot_ [bs] popt
     where
         (popt, bopt) = convertOpt opt
-        bs = bars bopt (Just labels', [counts])
+        bs = bars (Just labels', [counts]) bopt
 
         xs = F.toList xs'
         numBins = (opt^.breaks) xs
@@ -67,12 +67,12 @@ hist_ opt xs' = mapped.layout_x_axis.laxis_generate .~ const xAxis $ plot_ popt 
                     min' = minimum labels' - halfW
                     max' = maximum labels' + halfW
 
-hist ∷ F.Foldable f ⇒ HistOption → f Double → IO ()
-hist opt xs = either f f (hist_ opt xs)
+hist ∷ F.Foldable f ⇒ f Double → HistOption → IO ()
+hist xs opt = either f f (hist_ xs opt)
     where f x = renderableToWindow (toRenderable x) (opt^.width) (opt^.height)
 
-hist' ∷ F.Foldable f ⇒ HistOption → f Double → String → IO (PickFn ())
-hist' opt xs = either f f (hist_ opt xs)
+hist' ∷ F.Foldable f ⇒ f Double → HistOption → String → IO ()
+hist' xs opt flname = either f f (hist_ xs opt) flname >> return ()
     where 
         f x = renderableToFile
             (fo_size .~ (opt^.width, opt^.height) $ def)

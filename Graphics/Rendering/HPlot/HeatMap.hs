@@ -13,8 +13,8 @@ import Graphics.Rendering.HPlot.Types
 import Data.Default
 import Control.Lens
 
-heatmap_ ∷ HeatMapOption → [[Double]] → Layout Double Double
-heatmap_ opt xs = toLayout p
+heatmap_ ∷ [[Double]] → HeatMapOption → Layout Double Double
+heatmap_ xs opt = toLayout p
     where
         p = plotHeatMap 
             $ heat_map_values .~ xs
@@ -41,17 +41,17 @@ heatmap_ opt xs = toLayout p
                 ps' = drop 2 ps
                 [l, u] = take 2 ps
 
-heatmap ∷ HeatMapOption → [[Double]] → IO ()
-heatmap opt xs = renderableToWindow (toRenderable layout) (opt^.width) (opt^.height)
+heatmap ∷ [[Double]] → HeatMapOption → IO ()
+heatmap xs opt = renderableToWindow (toRenderable layout) (opt^.width) (opt^.height)
     where
-        layout = heatmap_ opt xs
+        layout = heatmap_ xs opt
 
-heatmap' ∷ HeatMapOption → [[Double]] → String → IO ()
-heatmap' opt xs flname = 
+heatmap' ∷ [[Double]] → HeatMapOption → String → IO ()
+heatmap' xs opt flname = 
     renderableToFile (fo_size .~ (opt^.width, opt^.height) $ def)
     (toRenderable layout) flname >> return ()
         where
-            layout = heatmap_ opt xs
+            layout = heatmap_ xs opt
 
 mkHeatMapAxis ∷ [String] → [Double] → (Double, Double) → AxisData Double
 mkHeatMapAxis labs labelvs range = AxisData {

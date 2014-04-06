@@ -15,9 +15,9 @@ import Control.Lens
 import Data.Default
 import Data.Either
 
-plot_ ∷ PlotOption → [EitherPlot] → EitherLayout
+plot_ ∷ [EitherPlot] → PlotOption → EitherLayout
 {-# INLINE plot_ #-}
-plot_ opt ps | null ls   = Right $ toLayout rs xAxisFnR
+plot_ ps opt | null ls   = Right $ toLayout rs xAxisFnR
              | otherwise = Left $ toLayout ls xAxisFnL
     where
         toLayout x xAxisFn = layout_title .~ opt^.title
@@ -58,10 +58,10 @@ plot_ opt ps | null ls   = Right $ toLayout rs xAxisFnR
             'y' → defaultGridLineStyle
             _ → line_color .~ mkColor "black" 0 $ def
 
-plot ∷ PlotOption → [EitherPlot] → IO ()
-plot opt ps = either f f (plot_ opt ps)
+plot ∷ [EitherPlot] → PlotOption → IO ()
+plot ps opt = either f f (plot_ ps opt)
     where f x = renderableToWindow (toRenderable x) (opt^.width) (opt^.height)
 
-plot' ∷ PlotOption → [EitherPlot] → String → IO ()
-plot' opt ps flname = either f f (plot_ opt ps) flname >> return ()
+plot' ∷ [EitherPlot] → PlotOption → String → IO ()
+plot' ps opt flname = either f f (plot_ ps opt) flname >> return ()
     where f x = renderableToFile (fo_size .~ (opt^.width, opt^.height) $ def) (toRenderable x)

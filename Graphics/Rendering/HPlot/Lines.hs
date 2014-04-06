@@ -24,8 +24,8 @@ toLineStyle opt = line_width .~ opt^.lwd
         _ → [])
     $ def
 
-line ∷ F.Foldable f ⇒ LineOption → (Maybe (f Double), f Double) → EitherPlot
-line opt (x,y) | isNothing x = Left $ mkPlot $ addIndexes y'
+line ∷ F.Foldable f ⇒ (Maybe (f Double), f Double) → LineOption → EitherPlot
+line (x,y) opt | isNothing x = Left $ mkPlot $ addIndexes y'
                | otherwise = Right $ mkPlot $ zip (F.toList $ fromJust x) y'
     where
         y' = F.toList y

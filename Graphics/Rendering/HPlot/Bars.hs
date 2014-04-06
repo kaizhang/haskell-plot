@@ -11,8 +11,8 @@ import Graphics.Rendering.HPlot.Utils
 import Data.List
 import Data.Maybe
 
-bars ∷ F.Foldable f ⇒ BarOption → (Maybe (f Double), [f Double]) → EitherPlot
-bars opt (x, ys) | isNothing x = Left $ toPlot' $ addIndexes ys'
+bars ∷ F.Foldable f ⇒ (Maybe (f Double), [f Double]) → BarOption → EitherPlot
+bars (x, ys) opt | isNothing x = Left $ toPlot' $ addIndexes ys'
                  | otherwise = Right $ toPlot' $ zip (F.toList $ fromJust x) ys'
     where
         toPlot' x_y = plotBars $ plot_bars_values .~ x_y

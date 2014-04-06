@@ -29,8 +29,8 @@ toPointStyle opt = case () of
             color = mkColor (opt^.col) (opt^.opacity)
             thick = opt^.lwd
 
-points ∷ F.Foldable f ⇒ PointOption → (Maybe (f Double), f Double) → EitherPlot
-points opt (x, y) | isNothing x = Left $ mkPlot $ addIndexes y'
+points ∷ F.Foldable f ⇒ (Maybe (f Double), f Double) → PointOption → EitherPlot
+points (x, y) opt | isNothing x = Left $ mkPlot $ addIndexes y'
                   | otherwise = Right $ mkPlot $ zip (F.toList $ fromJust x) y'
     where
         y' = F.toList y
