@@ -27,19 +27,30 @@ heatmap_ xs opt = toLayout p
               layout_plots .~ [p']
             $ layout_title .~ opt^.title
             $ layout_x_axis .~ (
-                    laxis_generate .~ axisFn (opt^.labCol)
+                    laxis_title .~ opt^.xlab
+                  $ laxis_generate .~ axisFn (opt^.labCol)
                   $ def
               )
+            $ layout_bottom_axis_visibility .~ xAxisVisibility
             $ layout_y_axis .~ (
-                    laxis_generate .~ axisFn (opt^.labRow)
+                    laxis_title .~ opt^.ylab
+                  $ laxis_generate .~ axisFn (opt^.labRow)
                   $ def
               )
+            $ layout_left_axis_visibility .~ yAxisVisibility
             $ def
 
         axisFn labs ps = mkHeatMapAxis labs ps' (l, u)
             where
                 ps' = drop 2 ps
                 [l, u] = take 2 ps
+        xAxisVisibility | opt^.axes == 0 = notVisible
+                        | opt^.axes == 2 = notVisible
+                        | otherwise = def
+        yAxisVisibility | opt^.axes == 0 = notVisible
+                        | opt^.axes == 1 = notVisible
+                        | otherwise = def
+        notVisible = AxisVisibility False False True
 
 heatmap ∷ [[Double]] → HeatMapOption → IO ()
 heatmap xs opt = renderableToWindow (toRenderable layout) (opt^.width) (opt^.height)

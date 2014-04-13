@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                haskell-plot
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            A library for generating 2D plots painlessly.
 description:         Greatly simplify the API of Chart (<http://hackage.haskell.org/package/Chart>).
 homepage:            https://github.com/kaizhang/haskell-plot

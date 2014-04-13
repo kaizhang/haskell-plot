@@ -1,9 +1,9 @@
 Haskell-Plot
 =================
 
-Simple plot interface based on [haskell-chart](https://github.com/timbod7/haskell-chart).
+Simple plotting interface based on [haskell-chart](https://github.com/timbod7/haskell-chart).
 
-Examples:
+Examples: (these examples are not compatible with version 0.1.0.0)
 
 ```haskell
 import Graphics.Rendering.HPlot

@@ -38,6 +38,7 @@ module Graphics.Rendering.HPlot.Types (
     , labRow
     , labCol
     , palette
+    , axes
 
     , with
     , (.~)
@@ -67,6 +68,7 @@ data PlotOption = PlotOption {
     , _plotWidth ∷ Int
     , _plotHeight ∷ Int
     , _plotGrid ∷ Char
+    , _plotAxes ∷ Int
     } deriving (Show)
 
 makeFields ''PlotOption
@@ -82,6 +84,7 @@ instance Default PlotOption where
         , _plotWidth = 480
         , _plotHeight = 480
         , _plotGrid = 'b'
+        , _plotAxes = 3
     }
 
 data BarOption = BarOption {
@@ -154,6 +157,7 @@ data HeatMapOption = HeatMapOption {
     , _heatmapHeight ∷ Int
     , _heatmapPalette ∷ [Colour Double]
     , _heatmapOpacity ∷ Double
+    , _heatmapAxes ∷ Int
 }
 
 makeFields ''HeatMapOption
@@ -170,6 +174,7 @@ instance Default HeatMapOption where
         , _heatmapHeight = 480
         , _heatmapPalette = warmCols
         , _heatmapOpacity = 1
+        , _heatmapAxes = 3
     }
 
 -- | print safe

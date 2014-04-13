@@ -6,12 +6,14 @@ module Graphics.Rendering.HPlot.Utils (
       , squareRoot
       , riceRule
       , histogram_
+      , nineReds
     ) where
 
 import qualified Data.Vector.Generic as G
 import qualified Data.Vector.Generic.Mutable as GM
 import Numeric.MathFunctions.Constants (m_epsilon)
 import Data.Colour
+import Data.Colour.SRGB
 import Data.Colour.Names
 import Data.Maybe
 import Data.List
@@ -78,3 +80,17 @@ freedmanDiaconis xs = round ((maximum xs - minimum xs) / binSzie)
 squareRoot = round . (sqrt ∷ Double → Double) . fromIntegral . length
 
 riceRule xs = ceiling (2*(fromIntegral $ length xs ∷ Double)**(1/3))
+
+-- | 9-class reds
+nineReds ∷ [Colour Double]
+nineReds = [
+    sRGB24 255 245 240,
+    sRGB24 254 224 210,
+    sRGB24 252 187 161,
+    sRGB24 252 146 114,
+    sRGB24 251 106 74,
+    sRGB24 239 59 44,
+    sRGB24 203 24 29,
+    sRGB24 165 15 21,
+    sRGB24 103 0 13
+    ]

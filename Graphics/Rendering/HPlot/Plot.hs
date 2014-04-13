@@ -28,12 +28,14 @@ plot_ ps opt | null ls   = Right $ toLayout rs xAxisFnR
                 $ laxis_style .~ xAxisStyle
                 $ def
             )
+            $ layout_bottom_axis_visibility .~ xAxisVisibility
             $ layout_y_axis .~ (
                   laxis_title .~ opt^.ylab
                 $ laxis_generate .~ yAxisFn
                 $ laxis_style .~ yAxisStyle
                 $ def
             )
+            $ layout_left_axis_visibility .~ yAxisVisibility
             $ def
 
         (ls, rs) = partitionEithers ps
@@ -52,11 +54,17 @@ plot_ ps opt | null ls   = Right $ toLayout rs xAxisFnR
             'b' → defaultGridLineStyle
             'x' → defaultGridLineStyle
             _ → line_color .~ mkColor "black" 0 $ def
-
         yGridStyle = case opt^.grid of
             'b' → defaultGridLineStyle
             'y' → defaultGridLineStyle
             _ → line_color .~ mkColor "black" 0 $ def
+        xAxisVisibility | opt^.axes == 0 = notVisible
+                        | opt^.axes == 2 = notVisible
+                        | otherwise = def
+        yAxisVisibility | opt^.axes == 0 = notVisible
+                        | opt^.axes == 1 = notVisible
+                        | otherwise = def
+        notVisible = AxisVisibility False False True
 
 plot ∷ [EitherPlot] → PlotOption → IO ()
 plot ps opt = either f f (plot_ ps opt)
