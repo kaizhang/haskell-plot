@@ -1,25 +1,65 @@
-{-# LANGUAGE OverloadedStrings, UnicodeSyntax #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE UnicodeSyntax #-}
 
 module Graphics.Rendering.HPlot.Bars where
 
-import qualified Data.Foldable as F
-import Graphics.Rendering.Chart
-import Control.Lens
+import Diagrams.Prelude
 import Data.Default
-import Graphics.Rendering.HPlot.Types
-import Graphics.Rendering.HPlot.Utils
-import Data.List
+import Control.Lens (makeLenses, (^.), both)
 import Data.Maybe
+import Graphics.Rendering.HPlot.Types
 
-bars ∷ F.Foldable f ⇒ (Maybe (f Double), [f Double]) → BarOption → EitherPlot
-bars (x, ys) opt | isNothing x = Left $ toPlot' $ addIndexes ys'
-                 | otherwise = Right $ toPlot' $ zip (F.toList $ fromJust x) ys'
-    where
-        toPlot' x_y = plotBars $ plot_bars_values .~ x_y
-            $ plot_bars_style .~ opt^.style
-            $ plot_bars_titles .~ opt^.legend
-            $ plot_bars_item_styles .~ fmap (\c → (FillStyleSolid $ mkColor c (opt^.opacity), Just def)) (cycle (opt^.cols))
-            $ plot_bars_spacing .~ BarsFixGap (opt^.space) 0
-            $ plot_bars_alignment .~ opt^.align
-            $ def
-        ys' = transpose $ fmap F.toList ys
+data BarOpts = BarOpts
+    { _barWidth ∷ Double  -- ^ from 0 to 1
+    , _barBaseLine ∷ Maybe Double
+    , _barOrientation ∷ Char
+    }
+
+makeLenses ''BarOpts
+
+instance Default BarOpts where
+    def = BarOpts
+        { _barWidth = 0.8
+        , _barBaseLine = Nothing
+        , _barOrientation = '^'
+        }
+
+bars ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → BarOpts → DelayPlot
+bars xs ys opt m = case opt^.barOrientation of
+                       '^' → upBars xs ys opt m
+                       '>' → rightBars xs ys opt m
+                       'V' → downBars xs ys opt m
+                       _ → upBars xs ys opt m
+
+upBars ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → BarOpts → DelayPlot
+upBars xs ys opt (mapX, mapY) = map (uncurry moveTo) [ (x ^& ((y+bl)/2), rect w (y-bl)) | (x, y) ← xy ]
+  where
+    xy = mapMaybe (runMap pMap) $ zip (getValues xs) $ getValues ys
+    w = (opt^.barWidth) * gap'
+    gap' = (fromJust.runMap mapX) 2 - (fromJust.runMap mapX) 1
+    pMap = compose (mapX, mapY)
+    bl = fromMaybe 0 $ do b ← opt^.barBaseLine
+                          runMap mapY b
+
+rightBars ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → BarOpts → DelayPlot
+rightBars xs ys opt (mapX, mapY) = map (uncurry moveTo) [ ( ((x+bl)/2) ^& y, rect (x-bl) h) | (x, y) ← xy ]
+  where
+    xy = mapMaybe (runMap pMap) $ zip (getValues xs) $ getValues ys
+    h = (opt^.barWidth) * gap'
+    gap' = (fromJust.runMap mapY) 2 - (fromJust.runMap mapY) 1
+    pMap = compose (mapX, mapY)
+    bl = fromMaybe 0 $ do b ← opt^.barBaseLine
+                          runMap mapX b
+
+downBars ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → BarOpts → DelayPlot
+downBars xs ys opt (mapX, mapY) = map (uncurry moveTo) [ (x ^& ((areaHeight+y-bl)/2), rect w (areaHeight-y-bl) ) | (x, y) ← xy ]
+  where
+    xy = mapMaybe (runMap pMap) $ zip (getValues xs) $ getValues ys
+    w = (opt^.barWidth) * gap'
+    gap' = (fromJust.runMap mapX) 2 - (fromJust.runMap mapX) 1
+    pMap = compose (mapX, mapY)
+    areaHeight = l' + u'
+    (l', u') = both %~ fromJust . runMap mapY $ domain mapY
+    bl = fromMaybe 0 $ do b ← opt^.barBaseLine
+                          runMap mapY b

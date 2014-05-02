@@ -1,39 +1,47 @@
-{-# LANGUAGE OverloadedStrings, UnicodeSyntax #-}
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE UnicodeSyntax #-}
 
 module Graphics.Rendering.HPlot.Points where
 
-import qualified Data.Foldable as F
-import Graphics.Rendering.Chart
-import Control.Lens
+import Diagrams.Prelude
 import Data.Default
-import Graphics.Rendering.HPlot.Types
-import Graphics.Rendering.HPlot.Utils
+import Control.Lens (makeLenses, (^.))
 import Data.Maybe
+import Graphics.Rendering.HPlot.Types
 
-toPointStyle ∷ PointOption → PointStyle
-toPointStyle opt = case () of
-    _ | s `elem` ".●" → filledCircles r color
-      | s `elem` "o○" → hollowCircles r thick color
-      | s `elem` "x" → exes r thick color
-      | s `elem` "+" → plusses r thick color
-      | s `elem` "*" → stars r thick color
-      | s `elem` "v▼" → filledPolygon r 3 True color
-      | s `elem` "^▲" → filledPolygon r 3 False color
-      | s `elem` "#■" → filledPolygon r 4 False color
-      | s `elem` "◆" → filledPolygon r 4 True color
-      | otherwise → filledCircles r color
-        where
-            s = opt^.shape
-            r = opt^.radius
-            color = mkColor (opt^.col) (opt^.opacity)
-            thick = opt^.lwd
+data PointOpts = PointOpts
+    { _shape ∷ Char
+    }
 
-points ∷ F.Foldable f ⇒ (Maybe (f Double), f Double) → PointOption → EitherPlot
-points (x, y) opt | isNothing x = Left $ mkPlot $ addIndexes y'
-                  | otherwise = Right $ mkPlot $ zip (F.toList $ fromJust x) y'
-    where
-        y' = F.toList y
-        mkPlot x_y = toPlot $ plot_points_values .~ x_y
-            $ plot_points_style .~ toPointStyle opt
-            $ def
+makeLenses ''PointOpts
+
+instance Default PointOpts where
+    def = PointOpts
+        { _shape = 'o'
+        }
+
+points ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → PointOpts → DelayPlot
+points xs ys opt (mapX, mapY) = map (uncurry moveTo) ps
+  where
+    ps = flip zip (repeat s).map p2.mapMaybe (runMap pMap) $ xy
+    xy = zip (getValues xs) $ getValues ys
+    s = stroke.getShape $ opt^.shape
+    pMap = compose (mapX, mapY)
+
+getShape ∷ Char → Path R2
+getShape s | s == 'o' = circle 0.1
+           | s == '.' = circle 0.1
+           | s == '^' = eqTriangle 0.1
+           | s == '#' = square 0.1
+           | s == '+' = plus 0.1
+           | s == '*' = star (StarSkip 2) (pentagon 0.1)
+           | s == 'x' = cross 0.1
+           | otherwise = circle 0.1
+
+cross ∷ Double → Path R2
+cross x = fromVertices [ x^&(-x) , (-x)^&x ]
+          <> fromVertices [ x^&x , (-x)^&(-x) ]
+
+plus ∷ Double → Path R2
+plus x = cross x # rotate (45 @@ deg)

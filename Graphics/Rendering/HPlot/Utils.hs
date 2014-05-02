@@ -1,96 +1,37 @@
 {-# LANGUAGE OverloadedStrings, UnicodeSyntax #-}
 
-module Graphics.Rendering.HPlot.Utils (
-        mkColor
-      , freedmanDiaconis
-      , squareRoot
-      , riceRule
-      , histogram_
-      , nineReds
+module Graphics.Rendering.HPlot.Utils
+    ( autoSteps
+    , linearMap
     ) where
 
-import qualified Data.Vector.Generic as G
-import qualified Data.Vector.Generic.Mutable as GM
-import Numeric.MathFunctions.Constants (m_epsilon)
-import Data.Colour
-import Data.Colour.SRGB
-import Data.Colour.Names
-import Data.Maybe
-import Data.List
+import Data.List (minimumBy)
+import Data.Ord (comparing)
+import Graphics.Rendering.HPlot.Types
 
--- Adapted from http://hackage.haskell.org/package/statistics-0.11.0.0/docs/Statistics-Quantile.html
-quantile ∷ Int        -- ^ /k/, the desired quantile.
-           -> Int        -- ^ /q/, the number of quantiles.
-           -> [Double]   -- ^ /x/, the sample data.
-           -> Double
-quantile k q x
-  | any isNaN x   = error "Sample contains NaNs"
-  | n == 1          = head x
-  | q < 2           = error "At least 2 quantiles is needed"
-  | k < 0 || k >= q = error "Wrong quantile number"
-  | otherwise       = xj + g * (xj1 - xj)
+chooseStep :: RealFloat a => a -> (a,a) -> Rational
+{-# INLINE chooseStep #-}
+chooseStep nsteps (x1,x2) = minimumBy (comparing proximity) stepVals
   where
-    j   = floor idx
-    idx = fromIntegral (n - 1) * fromIntegral k / fromIntegral q
-    g   = idx - fromIntegral j
-    xj  = sx !! j
-    xj1 = sx !! (j+1)
-    sx  = sort x
-    n   = length x
+    delta = x2 - x1
+    mult  = 10 ^^ ((floor $ logBase 10 $ delta / nsteps)::Integer)
+    stepVals = map (mult*) [0.1,0.2,0.25,0.5,1.0,2.0,2.5,5.0,10,20,25,50]
+    proximity x = abs $ delta / realToFrac x - nsteps
 
-histogram_ :: (Num b, RealFrac a, G.Vector v0 a, G.Vector v1 b) =>
-              Int
-           -- ^ Number of bins.  This value must be positive.  A zero
-           -- or negative value will cause an error.
-           -> a
-           -- ^ Lower bound on interval range.  Sample data less than
-           -- this will cause an error.
-           -> a
-           -- ^ Upper bound on interval range.  This value must not be
-           -- less than the lower bound.  Sample data that falls above
-           -- the upper bound will cause an error.
-           -> v0 a
-           -- ^ Sample data.
-           -> v1 b
-histogram_ numBins lo hi xs0 = G.create (GM.replicate numBins 0 >>= bin xs0)
+-- | Given a target number of values, and a list of input points,
+--   find evenly spaced values from the set {1*X, 2*X, 2.5*X, 5*X} (where
+--   X is some power of ten) that evenly cover the input points.
+autoSteps ∷ Int -> (Double, Double) -> (Double, Double, Double)
+autoSteps nSteps (minV, maxV) = (fromRational min', fromRational max', fromRational step)
   where
-    bin xs bins = go 0
-     where
-       go i | i >= len = return bins
-            | otherwise = do
-         let x = xs `G.unsafeIndex` i
-             b = truncate $ (x - lo) / d
-         GM.write bins b . (+1) =<< GM.read bins b
-         go (i+1)
-       len = G.length xs
-       d = ((hi - lo) * (1 + realToFrac m_epsilon)) / fromIntegral numBins
+    r@(minV', maxV')  | minV == maxV = (minV-0.5,minV+0.5)
+                      | otherwise    = (minV, maxV)
+    step = chooseStep (fromIntegral nSteps) r
+    min' = fromIntegral (floor   $ realToFrac minV' / step ∷ Integer) * step
+    max' = fromIntegral (ceiling $ realToFrac maxV' / step ∷ Integer) * step
 
-mkColor ∷ String → Double → AlphaColour Double
-mkColor c = withOpacity (fromMaybe blue $ readColourName c)
-
-freedmanDiaconis, squareRoot, riceRule ∷ [Double] → Int
-freedmanDiaconis xs = round ((maximum xs - minimum xs) / binSzie)
-    where
-        binSzie = 2 * iqr xs * n**(-1/3)
-        n = fromIntegral $ length xs
-        iqr x = let quartile3 = quantile 3 4 x
-                    quartile1 = quantile 1 4 x
-                in quartile3 - quartile1
-
-squareRoot = round . (sqrt ∷ Double → Double) . fromIntegral . length
-
-riceRule xs = ceiling (2*(fromIntegral $ length xs ∷ Double)**(1/3))
-
--- | 9-class reds
-nineReds ∷ [Colour Double]
-nineReds = [
-    sRGB24 255 245 240,
-    sRGB24 254 224 210,
-    sRGB24 252 187 161,
-    sRGB24 252 146 114,
-    sRGB24 251 106 74,
-    sRGB24 239 59 44,
-    sRGB24 203 24 29,
-    sRGB24 165 15 21,
-    sRGB24 103 0 13
-    ]
+linearMap ∷ (Double, Double) → (Double, Double) → PointMap Double
+linearMap (l, u) (l', u') = PointMap mapFn (l, u)
+  where
+    mapFn x | x < l || x > u = Nothing
+            | otherwise = Just $ (x - l) / (u - l) * (u' - l') + l'

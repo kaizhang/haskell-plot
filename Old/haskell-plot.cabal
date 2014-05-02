@@ -4,7 +4,7 @@
 name:                haskell-plot
 version:             0.1.0.1
 synopsis:            A library for generating 2D plots painlessly.
-description:         draw charts
+description:         Greatly simplify the API of Chart (<http://hackage.haskell.org/package/Chart>).
 homepage:            https://github.com/kaizhang/haskell-plot
 license:             GPL
 license-file:        LICENSE
@@ -23,13 +23,15 @@ library
     Graphics.Rendering.HPlot,
     Graphics.Rendering.HPlot.Types,
     Graphics.Rendering.HPlot.Plot,
+    Graphics.Rendering.HPlot.Hist,
     Graphics.Rendering.HPlot.Points,
     Graphics.Rendering.HPlot.Bars,
-    Graphics.Rendering.HPlot.Line,
+    Graphics.Rendering.HPlot.Lines,
     Graphics.Rendering.HPlot.Utils,
-    Graphics.Rendering.HPlot.Axis
+    Graphics.Rendering.HPlot.HeatMap
 
---  other-modules:       
+  other-modules:       
+    Graphics.Rendering.HPlot.HeatMap.Internal
 
   build-depends:
     base >=4 && < 5
@@ -38,6 +40,6 @@ library
     , colour >= 2.3
     , vector >= 0.10
     , math-functions >= 0.1
-    , diagrams-svg
-    , diagrams-lib
-    , SVGFonts
+    , Chart >= 1.2
+    , Chart-cairo >= 1.2
+    , Chart-gtk >= 1.2
