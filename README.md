@@ -40,19 +40,19 @@ area <span class="fu">=</span> plotArea <span class="dv">5</span><span class="fu
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">areaDiag <span class="ot">∷</span> <span class="dt">Diagram</span> <span class="dt">B</span> <span class="dt">R2</span>
 areaDiag <span class="fu">=</span> (showPlot area) </code></pre>
 <div class="figure">
-<img src="doc/area.svg" />
+<img src="doc/area.png" />
 </div>
 <p>Now that we have the plotArea, we can start adding actual plots. For example, we can use points to make point plot:</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">ps <span class="fu">=</span> points xs ys def</code></pre>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">pointPlot <span class="fu">=</span> area <span class="fu">&lt;+</span> (ps, <span class="dt">BL</span>) <span class="co">-- attach plot to plot area according to bottom and left axes</span></code></pre>
 <div class="figure">
-<img src="doc/points.svg" />
+<img src="doc/points.png" />
 </div>
 <p>You can attach any number of plots to plotArea:</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">ls <span class="fu">=</span> line xs ys def
 linePointPlot <span class="fu">=</span> area <span class="fu">&lt;+</span> (ps, <span class="dt">BL</span>) <span class="fu">&lt;+</span> (ls, <span class="dt">BL</span>)</code></pre>
 <div class="figure">
-<img src="doc/lp.svg" />
+<img src="doc/lp.png" />
 </div>
 <p>You can create an indexed Axis by indexAxis:</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">bottomAxis <span class="fu">=</span> indexAxis <span class="dv">50</span> [] <span class="dv">0</span><span class="fu">.</span><span class="dv">2</span> def</code></pre>
@@ -69,7 +69,7 @@ l2 <span class="fu">=</span> line <span class="dt">Nothing</span> ys&#39; def <s
 
 plot <span class="fu">=</span> area&#39; <span class="fu">&lt;+</span> (l1, <span class="dt">BL</span>) <span class="fu">&lt;+</span> (l2, <span class="dt">BR</span>)</code></pre>
 <div class="figure">
-<img src="doc/doublePlot.svg" />
+<img src="doc/doublePlot.png" />
 </div>
 <p>Note that the green line is placed according to left axis, and the red line is placed according to right axis.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">main <span class="fu">=</span> renderSVG <span class="st">&quot;doublePlot.svg&quot;</span> (<span class="dt">Dims</span> <span class="dv">480</span> <span class="dv">480</span>) <span class="fu">$</span> showPlot plot</code></pre>
