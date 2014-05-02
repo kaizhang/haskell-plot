@@ -54,7 +54,7 @@ The **PlotArea** contains four axes: left axis, top axis, right axis and bottom 
 > areaDiag ∷ Diagram B R2
 > areaDiag = (showPlot area) 
 
-![](doc/area.svg)
+![](doc/area.png)
 
 Now that we have the plotArea, we can start adding actual plots. For example, we can use points to make point plot:
 
@@ -62,14 +62,14 @@ Now that we have the plotArea, we can start adding actual plots. For example, we
 
 > pointPlot = area <+ (ps, BL) -- attach plot to plot area according to bottom and left axes
 
-![](doc/points.svg)
+![](doc/points.png)
 
 You can attach any number of plots to plotArea:
 
 > ls = line xs ys def
 > linePointPlot = area <+ (ps, BL) <+ (ls, BL)
 
-![](doc/lp.svg)
+![](doc/lp.png)
 
 You can create an indexed Axis by indexAxis:
 
@@ -89,7 +89,7 @@ Now let's create a plot area with 3 axes: left, bottom and right
 >
 > plot = area' <+ (l1, BL) <+ (l2, BR)
 
-![](doc/doublePlot.svg)
+![](doc/doublePlot.png)
 
 Note that the green line is placed according to left axis, and the red line is placed according to right axis.
 
