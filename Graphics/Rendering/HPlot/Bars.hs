@@ -2,7 +2,13 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UnicodeSyntax #-}
 
-module Graphics.Rendering.HPlot.Bars where
+module Graphics.Rendering.HPlot.Bars 
+    ( BarOpts
+    , barWidth
+    , barBaseLine
+    , barOrientation
+    , bars
+    ) where
 
 import Diagrams.Prelude
 import Data.Default
@@ -33,6 +39,7 @@ bars xs ys opt m = case opt^.barOrientation of
                        _ → upBars xs ys opt m
 
 upBars ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → BarOpts → DelayPlot
+{-# INLINE upBars #-}
 upBars xs ys opt (mapX, mapY) = map (uncurry moveTo) [ (x ^& ((y+bl)/2), rect w (y-bl)) | (x, y) ← xy ]
   where
     xy = mapMaybe (runMap pMap) $ zip (getValues xs) $ getValues ys
@@ -43,6 +50,7 @@ upBars xs ys opt (mapX, mapY) = map (uncurry moveTo) [ (x ^& ((y+bl)/2), rect w 
                           runMap mapY b
 
 rightBars ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → BarOpts → DelayPlot
+{-# INLINE rightBars #-}
 rightBars xs ys opt (mapX, mapY) = map (uncurry moveTo) [ ( ((x+bl)/2) ^& y, rect (x-bl) h) | (x, y) ← xy ]
   where
     xy = mapMaybe (runMap pMap) $ zip (getValues xs) $ getValues ys
@@ -53,6 +61,7 @@ rightBars xs ys opt (mapX, mapY) = map (uncurry moveTo) [ ( ((x+bl)/2) ^& y, rec
                           runMap mapX b
 
 downBars ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → BarOpts → DelayPlot
+{-# INLINE downBars #-}
 downBars xs ys opt (mapX, mapY) = map (uncurry moveTo) [ (x ^& ((areaHeight+y-bl)/2), rect w (areaHeight-y-bl) ) | (x, y) ← xy ]
   where
     xy = mapMaybe (runMap pMap) $ zip (getValues xs) $ getValues ys

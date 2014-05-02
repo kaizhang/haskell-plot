@@ -2,7 +2,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UnicodeSyntax #-}
 
-module Graphics.Rendering.HPlot.Line where
+module Graphics.Rendering.HPlot.Line 
+    ( line
+    , LineOpts
+    , lineshape
+    ) where
 
 import Diagrams.Prelude
 import Data.Default

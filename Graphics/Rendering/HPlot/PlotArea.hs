@@ -1,7 +1,21 @@
-{-# LANGUAGE OverloadedStrings, UnicodeSyntax, BangPatterns #-}
+{-# LANGUAGE OverloadedStrings, UnicodeSyntax #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Plot where
+module Graphics.Rendering.HPlot.PlotArea 
+    ( P(..)
+    , PlotArea
+    , plotAreaWidth
+    , plotAreaHeight
+    , plotAreaLeft
+    , plotAreaRight
+    , plotAreaTop
+    , plotAreaBottom
+    , plotAreaBackground
+    , plotArea
+    , showPlot
+    , placeOn
+    , (<+)
+    ) where
 
 import Diagrams.Prelude
 import Diagrams.Backend.SVG
@@ -60,8 +74,8 @@ showPlot (PlotArea w h ps l t r b bgr) = mconcat [lAxisD, translateY h tAxisD, t
       where
         labels = position $ map f $ b^.axisLabels
 
-placeOn ∷ DelayPlot → PlotArea → P → PlotArea
-placeOn pltFn area p = plotAreaPlots %~ (mconcat plt:) $ area
+placeOn ∷ (DelayPlot, P) → PlotArea → PlotArea
+placeOn (pltFn, p) area = plotAreaPlots %~ (mconcat plt:) $ area
   where
     plt = case p of
         BL → pltFn (bMap, lMap)
@@ -73,9 +87,6 @@ placeOn pltFn area p = plotAreaPlots %~ (mconcat plt:) $ area
     tMap = area^.plotAreaTop^.axisMap
     rMap = area^.plotAreaRight^.axisMap
 
-concatP ∷ [(PointMap Double, PointMap Double) → Diagram B R2] → (PointMap Double, PointMap Double) → Diagram B R2
-concatP ps pMap = mconcat $ sequence ps pMap
-
-minMax ∷ [Double] → (Double, Double)
-minMax x = (minimum x, maximum x)
-
+(<+) ∷ PlotArea → (DelayPlot, P) → PlotArea
+infixl 1 <+
+(<+) = flip placeOn

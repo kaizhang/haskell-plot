@@ -2,7 +2,19 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UnicodeSyntax #-}
 
-module Graphics.Rendering.HPlot.Axis where
+module Graphics.Rendering.HPlot.Axis
+   ( AxisFn(..)
+   , Axis
+   , axisMap
+   , axisLabels
+   , axisDiag
+   , realAxis
+   , indexAxis
+   , emptyAxis
+   , flipAxisFn
+   , axis
+   , text'
+   ) where
 
 import Diagrams.Prelude hiding (pad)
 import Diagrams.Backend.SVG
@@ -11,17 +23,6 @@ import Control.Lens (makeLenses, (^.))
 import Graphics.SVGFonts.ReadFont
 import Graphics.Rendering.HPlot.Utils
 import Graphics.Rendering.HPlot.Types
-
-data LineStyle = LineStyle
-    { _lineWidth ∷ Double
-    , _lineColor ∷ AlphaColour Double
---    , _lineDashes ∷ [Double]
---    , _lineCap ∷ LineCap
---    , _lineJoin ∷ LineJoin
-    }
-
-withLineSty ∷ HasStyle a ⇒ LineStyle → a → a
-withLineSty sty = lw (_lineWidth sty) . lcA (_lineColor sty)
 
 data Axis = Axis
     { _axisMap ∷ PointMap Double
@@ -41,20 +42,12 @@ instance Default AxisFn where
             axis' = fromVertices [0 ^& 0, len ^& 0]
             pMap = PointMap (const Nothing) (0, -1)
 
-instance Default LineStyle where
-    def = LineStyle 
-        { _lineWidth = 0.02
-        , _lineColor = opaque blue
-        }
-
 data AxisOpts = AxisOpts
     { _tickN ∷ {-# UNPACK #-} !Int
     , _minorTickN ∷ {-# UNPACK #-} !Int
     , _tickLen ∷ Double
     , _minorTickLen ∷ Double
     , _labelOffset ∷ Double
-    , _hideLabel ∷ Bool
-    , _hidePadding ∷ Bool
     }
 
 makeLenses ''AxisOpts
@@ -63,11 +56,9 @@ instance Default AxisOpts where
     def = AxisOpts
         { _tickN = 5
         , _minorTickN = 4
-        , _tickLen = 0.4
-        , _minorTickLen = 0.2
-        , _labelOffset = -0.5
-        , _hideLabel = False
-        , _hidePadding = False
+        , _tickLen = 0.1
+        , _minorTickLen = 0.05
+        , _labelOffset = -0.1
         }
 
 realAxis ∷ (Double, Double) → Double → AxisOpts → AxisFn
@@ -124,4 +115,4 @@ ticks len tickNum tickL = mconcat [ fromVertices [ x ^& 0, x ^& tickL ] | x ← 
     step = len / (fromIntegral tickNum - 1)
 
 text' ∷ String → Diagram B R2
-text' s = stroke (textSVG' (TextOpts s lin2 INSIDE_H KERN False 1 1)) # fc black # lw 0
+text' s = stroke (textSVG' (TextOpts s lin2 INSIDE_H KERN False 0.2 0.2)) # fc black # lw 0

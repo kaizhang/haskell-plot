@@ -2,7 +2,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module Graphics.Rendering.HPlot.Types where
+module Graphics.Rendering.HPlot.Types 
+    ( DelayPlot
+    , PointMap(..)
+    , PlotData(..)
+    , compose
+    , flipMap
+    ) where
 
 import Data.Maybe
 import Diagrams.Prelude

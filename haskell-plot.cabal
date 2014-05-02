@@ -2,11 +2,11 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                haskell-plot
-version:             0.1.0.1
+version:             0.2.0.0
 synopsis:            A library for generating 2D plots painlessly.
 description:         draw charts
 homepage:            https://github.com/kaizhang/haskell-plot
-license:             GPL
+license:             MIT
 license-file:        LICENSE
 author:              Kai Zhang <kai@kzhang.org>
 maintainer:          Kai Zhang <kai@kzhang.org>
@@ -22,7 +22,7 @@ library
   exposed-modules:     
     Graphics.Rendering.HPlot,
     Graphics.Rendering.HPlot.Types,
-    Graphics.Rendering.HPlot.Plot,
+    Graphics.Rendering.HPlot.PlotArea,
     Graphics.Rendering.HPlot.Points,
     Graphics.Rendering.HPlot.Bars,
     Graphics.Rendering.HPlot.Line,
@@ -35,9 +35,6 @@ library
     base >=4 && < 5
     , lens >= 3.10
     , data-default >= 0.5
-    , colour >= 2.3
-    , vector >= 0.10
-    , math-functions >= 0.1
     , diagrams-svg
     , diagrams-lib
     , SVGFonts

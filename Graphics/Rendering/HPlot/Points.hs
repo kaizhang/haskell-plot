@@ -2,7 +2,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UnicodeSyntax #-}
 
-module Graphics.Rendering.HPlot.Points where
+module Graphics.Rendering.HPlot.Points 
+    ( points
+    , PointOpts
+    , shape
+    ) where
 
 import Diagrams.Prelude
 import Data.Default
@@ -30,18 +34,20 @@ points xs ys opt (mapX, mapY) = map (uncurry moveTo) ps
     pMap = compose (mapX, mapY)
 
 getShape ∷ Char → Path R2
-getShape s | s == 'o' = circle 0.1
-           | s == '.' = circle 0.1
+{-# INLINE getShape #-}
+getShape s | s == 'o' = circle 0.07
            | s == '^' = eqTriangle 0.1
            | s == '#' = square 0.1
-           | s == '+' = plus 0.1
+           | s == '+' = plus 0.07
            | s == '*' = star (StarSkip 2) (pentagon 0.1)
-           | s == 'x' = cross 0.1
-           | otherwise = circle 0.1
+           | s == 'x' = cross 0.07
+           | otherwise = circle 0.07
 
 cross ∷ Double → Path R2
+{-# INLINE cross #-}
 cross x = fromVertices [ x^&(-x) , (-x)^&x ]
           <> fromVertices [ x^&x , (-x)^&(-x) ]
 
 plus ∷ Double → Path R2
+{-# INLINE plus #-}
 plus x = cross x # rotate (45 @@ deg)
