@@ -1,7 +1,7 @@
 Haskell-Plot
 =================
 
-I'm starting from scratch to write a new plotting library based on [Diagrams](http://projects.haskell.org/diagrams/). The old package can be found in the "Old" directory.
+I'm starting from scratch to write a new plotting library based on [Diagrams](http://projects.haskell.org/diagrams/). The old package can be found in the "Old" directory. The library in Hackage is outdated.
 
 Header
 =======
@@ -24,7 +24,7 @@ Currently the **Axis** type contains three components:
 2. labels and their positions
 3. the actual axis with type "Diagram B R2"
 
-We usually do not use **Axis** directly, instead, we creat a action/function which take a number (the length of axis) and generate the axis. Such functions are wrapped in the **AxisFn** type. **AxisFn**s are building blocks of chart. I wrote some general functions to help create **AxisFn**, i.e., realAxis, indexAxis, emptyAxis.
+We usually do not use **Axis** directly, instead, we creat an action/function which takes a number (the length of axis) and generates the axis. Such functions are wrapped in the **AxisFn** type. **AxisFn**s are building blocks of chart. I wrote some general functions to help create **AxisFn**, i.e., realAxis, indexAxis, emptyAxis.
 
 > xs ∷ [Double]
 > xs = take 50 $ randomRs (-100, 100) $ mkStdGen 2
