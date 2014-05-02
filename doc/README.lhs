@@ -6,7 +6,6 @@ I'm starting from scratch to write a new plotting library based on [Diagrams](ht
 Header
 =======
 
-> {-# LANGUAGE OverloadedStrings #-}
 > {-# LANGUAGE TemplateHaskell #-}
 > {-# LANGUAGE UnicodeSyntax #-}
 
@@ -25,7 +24,7 @@ Currently the **Axis** type contains three components:
 2. labels and their positions
 3. the actual axis with type "Diagram B R2"
 
-We usually do not create **Axis** directly, instead, we creat a function which take a number (the length of axis) and generate the axis. Such functions are wrapped in the **AxisFn** type. **AxisFn**s are building blocks of chart. I wrote some general functions to help create **AxisFn**, i.e., realAxis, indexAxis, emptyAxis.
+We usually do not use **Axis** directly, instead, we creat a action/function which take a number (the length of axis) and generate the axis. Such functions are wrapped in the **AxisFn** type. **AxisFn**s are building blocks of chart. I wrote some general functions to help create **AxisFn**, i.e., realAxis, indexAxis, emptyAxis.
 
 > xs ∷ [Double]
 > xs = take 50 $ randomRs (-100, 100) $ mkStdGen 2
@@ -52,7 +51,7 @@ The **PlotArea** contains four axes: left axis, top axis, right axis and bottom 
 **PlotArea** can be converted to a Diagram by **showPlot**.
 
 > areaDiag ∷ Diagram B R2
-> areaDiag = (showPlot area) 
+> areaDiag = showPlot area
 
 ![](doc/area.png)
 
@@ -93,4 +92,47 @@ Now let's create a plot area with 3 axes: left, bottom and right
 
 Note that the green line is placed according to left axis, and the red line is placed according to right axis.
 
-> main = renderSVG "doublePlot.svg" (Dims 480 480) $ showPlot plot
+Bar plot
+========
+
+Let's try to make some bar plots in this section.
+
+> vals ∷ [Double]
+> vals = take 10 $ randomRs (-100, 100) $ mkStdGen 21
+>
+> labels = ["a","b","c","d","e","f","g","h","i","j"]
+>
+> valAxis = realAxis (minimum vals, maximum vals) 0.2 def
+>
+> labAxis = indexAxis 10 labels 0.4 def
+>
+> bs = bars labels vals def # fc blue
+>
+> barArea = plotArea 5.5 4.8 (valAxis, def, def, labAxis)
+>
+> barPlot = barArea <+ (bs, BL)
+
+![](doc/bar.png)
+
+You can make a horizontal bar plot by swapping the axes:
+
+> hBarArea = plotArea 5.5 4.8 (labAxis, def, def, valAxis)
+>
+> -- swap vals and labels, change bar orientation
+> bs' = bars vals labels (barOrientation .~ '>' $ def) # fc blue
+>
+> hBarPlot = hBarArea <+ (bs', BL)
+
+![](doc/hbar.png)
+
+Another bar plot:
+
+> bsWithBase = bars labels vals (barBaseLine .~ Just 0 $ def) # fc blue
+>
+> barPlot' = barArea <+ (bsWithBase, BL)
+
+![](doc/biBar.png)
+
+The main function used to produce svg file:
+
+> main = renderSVG "plot.svg" (Dims 480 480) $ showPlot barPlot'

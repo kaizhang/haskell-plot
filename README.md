@@ -1,8 +1,7 @@
 <h1 id="haskell-plot">Haskell-Plot</h1>
 <p>I'm starting from scratch to write a new plotting library based on <a href="http://projects.haskell.org/diagrams/">Diagrams</a>. The old package can be found in the &quot;Old&quot; directory.</p>
 <h1 id="header">Header</h1>
-<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span>
-<span class="ot">{-# LANGUAGE TemplateHaskell #-}</span>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span>
 <span class="ot">{-# LANGUAGE UnicodeSyntax #-}</span></code></pre>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Diagrams.Prelude</span>
 <span class="kw">import </span><span class="dt">Diagrams.Backend.SVG</span>
@@ -16,7 +15,7 @@
 <li>labels and their positions</li>
 <li>the actual axis with type &quot;Diagram B R2&quot;</li>
 </ol>
-<p>We usually do not create <strong>Axis</strong> directly, instead, we creat a function which take a number (the length of axis) and generate the axis. Such functions are wrapped in the <strong>AxisFn</strong> type. <strong>AxisFn</strong>s are building blocks of chart. I wrote some general functions to help create <strong>AxisFn</strong>, i.e., realAxis, indexAxis, emptyAxis.</p>
+<p>We usually do not use <strong>Axis</strong> directly, instead, we creat a action/function which take a number (the length of axis) and generate the axis. Such functions are wrapped in the <strong>AxisFn</strong> type. <strong>AxisFn</strong>s are building blocks of chart. I wrote some general functions to help create <strong>AxisFn</strong>, i.e., realAxis, indexAxis, emptyAxis.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">xs <span class="ot">∷</span> [<span class="dt">Double</span>]
 xs <span class="fu">=</span> take <span class="dv">50</span> <span class="fu">$</span> randomRs (<span class="fu">-</span><span class="dv">100</span>, <span class="dv">100</span>) <span class="fu">$</span> mkStdGen <span class="dv">2</span>
 
@@ -38,7 +37,7 @@ area <span class="fu">=</span> plotArea <span class="dv">5</span><span class="fu
        )</code></pre>
 <p><strong>PlotArea</strong> can be converted to a Diagram by <strong>showPlot</strong>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">areaDiag <span class="ot">∷</span> <span class="dt">Diagram</span> <span class="dt">B</span> <span class="dt">R2</span>
-areaDiag <span class="fu">=</span> (showPlot area) </code></pre>
+areaDiag <span class="fu">=</span> showPlot area</code></pre>
 <div class="figure">
 <img src="doc/area.png" />
 </div>
@@ -72,4 +71,41 @@ plot <span class="fu">=</span> area&#39; <span class="fu">&lt;+</span> (l1, <spa
 <img src="doc/doublePlot.png" />
 </div>
 <p>Note that the green line is placed according to left axis, and the red line is placed according to right axis.</p>
-<pre class="sourceCode literate haskell"><code class="sourceCode haskell">main <span class="fu">=</span> renderSVG <span class="st">&quot;doublePlot.svg&quot;</span> (<span class="dt">Dims</span> <span class="dv">480</span> <span class="dv">480</span>) <span class="fu">$</span> showPlot plot</code></pre>
+<h1 id="bar-plot">Bar plot</h1>
+<p>Let's try to make some bar plots in this section.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">vals <span class="ot">∷</span> [<span class="dt">Double</span>]
+vals <span class="fu">=</span> take <span class="dv">10</span> <span class="fu">$</span> randomRs (<span class="fu">-</span><span class="dv">100</span>, <span class="dv">100</span>) <span class="fu">$</span> mkStdGen <span class="dv">21</span>
+
+labels <span class="fu">=</span> [<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;d&quot;</span>,<span class="st">&quot;e&quot;</span>,<span class="st">&quot;f&quot;</span>,<span class="st">&quot;g&quot;</span>,<span class="st">&quot;h&quot;</span>,<span class="st">&quot;i&quot;</span>,<span class="st">&quot;j&quot;</span>]
+
+valAxis <span class="fu">=</span> realAxis (minimum vals, maximum vals) <span class="dv">0</span><span class="fu">.</span><span class="dv">2</span> def
+
+labAxis <span class="fu">=</span> indexAxis <span class="dv">10</span> labels <span class="dv">0</span><span class="fu">.</span><span class="dv">4</span> def
+
+bs <span class="fu">=</span> bars labels vals def <span class="st"># fc blue</span>
+
+barArea <span class="fu">=</span> plotArea <span class="dv">5</span><span class="fu">.</span><span class="dv">5</span> <span class="dv">4</span><span class="fu">.</span><span class="dv">8</span> (valAxis, def, def, labAxis)
+
+barPlot <span class="fu">=</span> barArea <span class="fu">&lt;+</span> (bs, <span class="dt">BL</span>)</code></pre>
+<div class="figure">
+<img src="doc/bar.png" />
+</div>
+<p>You can make a horizontal bar plot by swapping the axes:</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">hBarArea <span class="fu">=</span> plotArea <span class="dv">5</span><span class="fu">.</span><span class="dv">5</span> <span class="dv">4</span><span class="fu">.</span><span class="dv">8</span> (labAxis, def, def, valAxis)
+
+<span class="co">-- swap vals and labels, change bar orientation</span>
+bs&#39; <span class="fu">=</span> bars vals labels (barOrientation <span class="fu">.~</span> <span class="ch">&#39;&gt;&#39;</span> <span class="fu">$</span> def) <span class="st"># fc blue</span>
+
+hBarPlot <span class="fu">=</span> hBarArea <span class="fu">&lt;+</span> (bs&#39;, <span class="dt">BL</span>)</code></pre>
+<div class="figure">
+<img src="doc/hbar.png" />
+</div>
+<p>Another bar plot:</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">bsWithBase <span class="fu">=</span> bars labels vals (barBaseLine <span class="fu">.~</span> <span class="dt">Just</span> <span class="dv">0</span> <span class="fu">$</span> def) <span class="st"># fc blue</span>
+
+barPlot&#39; <span class="fu">=</span> barArea <span class="fu">&lt;+</span> (bsWithBase, <span class="dt">BL</span>)</code></pre>
+<div class="figure">
+<img src="doc/biBar.png" />
+</div>
+<p>The main function used to produce svg file:</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">main <span class="fu">=</span> renderSVG <span class="st">&quot;plot.svg&quot;</span> (<span class="dt">Dims</span> <span class="dv">480</span> <span class="dv">480</span>) <span class="fu">$</span> showPlot barPlot&#39;</code></pre>
