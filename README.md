@@ -1,5 +1,5 @@
 <h1 id="haskell-plot">Haskell-Plot</h1>
-<p>I'm starting from scratch to write a new plotting library based on <a href="http://projects.haskell.org/diagrams/">Diagrams</a>. The old package can be found in the &quot;Old&quot; directory.</p>
+<p>I'm starting from scratch to write a new plotting library based on <a href="http://projects.haskell.org/diagrams/">Diagrams</a>. The old package can be found in the &quot;Old&quot; directory. The library in Hackage is outdated.</p>
 <h1 id="header">Header</h1>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span>
 <span class="ot">{-# LANGUAGE UnicodeSyntax #-}</span></code></pre>
@@ -15,7 +15,7 @@
 <li>labels and their positions</li>
 <li>the actual axis with type &quot;Diagram B R2&quot;</li>
 </ol>
-<p>We usually do not use <strong>Axis</strong> directly, instead, we creat a action/function which take a number (the length of axis) and generate the axis. Such functions are wrapped in the <strong>AxisFn</strong> type. <strong>AxisFn</strong>s are building blocks of chart. I wrote some general functions to help create <strong>AxisFn</strong>, i.e., realAxis, indexAxis, emptyAxis.</p>
+<p>We usually do not use <strong>Axis</strong> directly, instead, we creat an action/function which takes a number (the length of axis) and generates the axis. Such functions are wrapped in the <strong>AxisFn</strong> type. <strong>AxisFn</strong>s are building blocks of chart. I wrote some general functions to help create <strong>AxisFn</strong>, i.e., realAxis, indexAxis, emptyAxis.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell">xs <span class="ot">∷</span> [<span class="dt">Double</span>]
 xs <span class="fu">=</span> take <span class="dv">50</span> <span class="fu">$</span> randomRs (<span class="fu">-</span><span class="dv">100</span>, <span class="dv">100</span>) <span class="fu">$</span> mkStdGen <span class="dv">2</span>
 
