@@ -7,16 +7,24 @@ import Data.List.Split
 import Control.Lens ((^.))
 
 xs :: [Double]
-xs = take 2000 $ randomRs (-100, 100) $ mkStdGen 2
+xs = take 1600 $ randomRs (-100, 100) $ mkStdGen 2
 
 xs' :: [[Double]]
-xs' = chunksOf 50 xs
+xs' = chunksOf 40 xs
+
+ls :: String
+ls = take 200 $ randomRs ('a', 'z') $ mkStdGen 22
+
+labels = chunksOf 5 ls
 
 main = do
-    let xaxis = indexAxis 50 [] 0.056 $ with & tickLen .~ (-0.05)
-        yaxis = indexAxis 40 [] 0.056 $ with & tickLen .~ (-0.05)
+    let xaxis = indexAxis 40 labels 0.056 $ with & tickLen .~ (-0.05)
+                                                 & labelOpts .~ ( with
+                                                     & labelRotation .~ (1/4)
+                                                     )
+        yaxis = indexAxis 40 labels 0.056 $ with & tickLen .~ (-0.05)
         area = plotArea 5.5 4.8 (yaxis, emptyAxis, emptyAxis, xaxis)
         heat = heatmap xs' def
         legend = colorKey 0.3 4.8 (minimum xs, maximum xs) (def^.palette)
         p = area <+ (heat, BL)
-    renderSVG "1.svg" (Dims 480 480) $ (center $ showPlot p) ||| strutX 0.2 ||| center legend
+    renderSVG "1.svg" (Dims 480 480) $ showPlot p ||| strutX 0.2 ||| alignB legend
