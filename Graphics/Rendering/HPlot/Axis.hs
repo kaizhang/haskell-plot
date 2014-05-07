@@ -7,7 +7,6 @@ module Graphics.Rendering.HPlot.Axis
    , axisLabels
    , axisDiag
    , axisLabelOpts
-   , axisGrid
    , labelOffsetX
    , labelOffsetY
    , labelRotation
@@ -51,7 +50,6 @@ data Axis = Axis
     , _axisDiag :: Diagram B R2
     , _axisLabels :: [((Double, Double), Text)]
     , _axisLabelOpts :: LabelOpts
-    , _axisGrid :: Bool
     }
 
 makeLenses ''Axis
@@ -61,7 +59,7 @@ newtype AxisFn = AxisFn { makeAxis :: Double -> Axis }
 instance Default AxisFn where
     def = AxisFn f
       where
-        f len = Axis pMap axis' [] def False
+        f len = Axis pMap axis' [] def
           where 
             axis' = fromVertices [0 ^& 0, len ^& 0]
             pMap = PointMap (const Nothing) (0, -1)
@@ -94,7 +92,7 @@ realAxis r pad' opt = AxisFn
                   tickN' = truncate ((u - l) / step) + 1
                   labelP = zip (enumFromThenTo pad' (pad'+stepLabel) (len-pad')) $ repeat 0
                   stepLabel = (len - 2*pad') / fromIntegral (tickN' - 1)
-              in Axis pMap axis' labels (opt^.labelOpts) False
+              in Axis pMap axis' labels (opt^.labelOpts)
     )
 
 indexAxis :: Int -> [String] -> Double -> AxisOpts -> AxisFn
@@ -106,11 +104,11 @@ indexAxis num labels pad' opt = AxisFn
                   labels' = zip labelP $ map text' labels
                   labelP = zip (enumFromThenTo pad' (pad'+stepLabel) (len-pad')) $ repeat 0
                   stepLabel = (len - 2*pad') / fromIntegral (num - 1)
-              in Axis pMap axis' labels' (opt^.labelOpts) False
+              in Axis pMap axis' labels' (opt^.labelOpts)
     )
 
 emptyAxis :: AxisFn
-emptyAxis = AxisFn $ const $ Axis pMap mempty [] def False
+emptyAxis = AxisFn $ const $ Axis pMap mempty [] def
   where 
     pMap = PointMap (const Nothing) (0, -1)
 

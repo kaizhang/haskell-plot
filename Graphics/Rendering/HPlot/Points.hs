@@ -1,6 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE UnicodeSyntax #-}
 
 module Graphics.Rendering.HPlot.Points 
     ( points
@@ -15,7 +13,7 @@ import Data.Maybe
 import Graphics.Rendering.HPlot.Types
 
 data PointOpts = PointOpts
-    { _shape ∷ Char
+    { _shape :: Char
     }
 
 makeLenses ''PointOpts
@@ -25,7 +23,7 @@ instance Default PointOpts where
         { _shape = 'o'
         }
 
-points ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → PointOpts → DelayPlot
+points :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> PointOpts -> DelayPlot
 points xs ys opt (mapX, mapY) = map (uncurry moveTo) ps
   where
     ps = flip zip (repeat s).map p2.mapMaybe (runMap pMap) $ xy
@@ -33,7 +31,7 @@ points xs ys opt (mapX, mapY) = map (uncurry moveTo) ps
     s = stroke.getShape $ opt^.shape
     pMap = compose (mapX, mapY)
 
-getShape ∷ Char → Path R2
+getShape :: Char -> Path R2
 {-# INLINE getShape #-}
 getShape s | s == 'o' = circle 0.07
            | s == '^' = eqTriangle 0.1
@@ -43,11 +41,11 @@ getShape s | s == 'o' = circle 0.07
            | s == 'x' = cross 0.07
            | otherwise = circle 0.07
 
-cross ∷ Double → Path R2
+cross :: Double -> Path R2
 {-# INLINE cross #-}
 cross x = fromVertices [ x^&(-x) , (-x)^&x ]
           <> fromVertices [ x^&x , (-x)^&(-x) ]
 
-plus ∷ Double → Path R2
+plus :: Double -> Path R2
 {-# INLINE plus #-}
 plus x = cross x # rotate (45 @@ deg)
