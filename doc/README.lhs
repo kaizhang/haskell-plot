@@ -6,9 +6,6 @@ I'm starting from scratch to write a new plotting library based on [Diagrams](ht
 Header
 =======
 
-> {-# LANGUAGE TemplateHaskell #-}
-> {-# LANGUAGE UnicodeSyntax #-}
-
 > import Diagrams.Prelude
 > import Diagrams.Backend.SVG
 > import Data.Default
@@ -26,16 +23,16 @@ Currently the **Axis** type contains three components:
 
 We usually do not use **Axis** directly, instead, we creat an action/function which takes a number (the length of axis) and generates the axis. Such functions are wrapped in the **AxisFn** type. **AxisFn**s are building blocks of chart. I wrote some general functions to help create **AxisFn**, i.e., realAxis, indexAxis, emptyAxis.
 
-> xs ∷ [Double]
+> xs :: [Double]
 > xs = take 50 $ randomRs (-100, 100) $ mkStdGen 2
 >
-> ys ∷ [Double]
+> ys :: [Double]
 > ys = take 50 $ randomRs (-100, 100) $ mkStdGen 4
 >
-> xAxis ∷ AxisFn
+> xAxis :: AxisFn
 > xAxis = realAxis (minimum xs, maximum xs) 0.2 def
 >
-> yAxis ∷ AxisFn
+> yAxis :: AxisFn
 > yAxis = realAxis (minimum ys, maximum ys) 0.2 def
 
 The **PlotArea** contains four axes: left axis, top axis, right axis and bottom axis. We can use **plotArea** to create a **PlotArea**.
@@ -50,7 +47,7 @@ The **PlotArea** contains four axes: left axis, top axis, right axis and bottom 
 
 **PlotArea** can be converted to a Diagram by **showPlot**.
 
-> areaDiag ∷ Diagram B R2
+> areaDiag :: Diagram B R2
 > areaDiag = showPlot area
 
 ![](doc/area.png)
@@ -76,7 +73,7 @@ You can create an indexed Axis by indexAxis:
 
 Now let's create a plot area with 3 axes: left, bottom and right
 
-> ys' ∷ [Double]
+> ys' :: [Double]
 > ys' = take 50 $ randomRs (-1, 1) $ mkStdGen 2
 >
 > yAxis' = realAxis (minimum ys', maximum ys') 0.2 def
@@ -97,7 +94,7 @@ Bar plot
 
 Let's try to make some bar plots in this section.
 
-> vals ∷ [Double]
+> vals :: [Double]
 > vals = take 10 $ randomRs (-100, 100) $ mkStdGen 21
 >
 > labels = ["a","b","c","d","e","f","g","h","i","j"]

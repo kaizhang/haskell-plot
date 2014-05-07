@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE UnicodeSyntax #-}
 
 module Graphics.Rendering.HPlot.Line 
     ( line
@@ -15,7 +14,7 @@ import Data.Maybe
 import Graphics.Rendering.HPlot.Types
 
 data LineOpts = LineOpts
-    { _lineshape ∷ Char
+    { _lineshape :: Char
     }
 
 makeLenses ''LineOpts
@@ -25,7 +24,7 @@ instance Default LineOpts where
         { _lineshape = 'o'
         }
 
-line ∷ (PlotData m1 a1, PlotData m2 a2) ⇒ m1 a1 → m2 a2 → LineOpts → DelayPlot
+line :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> LineOpts -> DelayPlot
 line xs ys opt (mapX, mapY) = [l]
   where
     l = fromVertices.map p2.mapMaybe (runMap pMap) $ xy
