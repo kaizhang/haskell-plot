@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Bars 
+module Graphics.Rendering.HPlot.Plots.Bars 
     ( BarOpts
     , barWidth
     , barBaseLine

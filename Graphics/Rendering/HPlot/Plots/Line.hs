@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Line 
+module Graphics.Rendering.HPlot.Plots.Line 
     ( line
     , LineOpts
     , lineshape

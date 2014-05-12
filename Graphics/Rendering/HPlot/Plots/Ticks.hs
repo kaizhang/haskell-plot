@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Ticks
+module Graphics.Rendering.HPlot.Plots.Ticks
     ( ticks
     ) where
 

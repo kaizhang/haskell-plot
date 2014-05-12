@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Heatmap
+module Graphics.Rendering.HPlot.Plots.Heatmap
     ( heatmap
     , colorKey
     , palette
@@ -13,9 +13,7 @@ import Control.Lens hiding ((#))
 import Data.Maybe
 import Graphics.Rendering.HPlot.Types
 import Graphics.Rendering.HPlot.Utils
-import Graphics.Rendering.HPlot.Axis
 import Data.Colour.Palette.BrewerSet
-import Data.Colour.SRGB
 
 data HeatmapOpts = HeatmapOpts
     { _palette :: [Colour Double] 
@@ -25,15 +23,6 @@ instance Default HeatmapOpts where
     def = HeatmapOpts
         { _palette = reverse $ brewerSet RdYlBu 11
         }
-
-color1 :: [Colour Double]
-color1 = [ sRGB24 0 0 139
-         , sRGB24 106 90 205
-         , sRGB24 240 248 255
-         , sRGB24 255 230 248
-         , sRGB24 199 21 133
-         , sRGB24 139 0 0
-         ]
 
 makeLenses ''HeatmapOpts
 

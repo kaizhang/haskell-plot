@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Points 
+module Graphics.Rendering.HPlot.Plots.Points 
     ( points
     , PointOpts
     , shape
