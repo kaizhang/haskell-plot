@@ -31,6 +31,7 @@ library
     , Graphics.Rendering.HPlot.Plots.Line
     , Graphics.Rendering.HPlot.Plots.Ticks
     , Graphics.Rendering.HPlot.Plots.Heatmap
+    , Graphics.Rendering.HPlot.Plots.Network
 
 --  other-modules:       
 
@@ -43,3 +44,4 @@ library
     , SVGFonts
     , palette
     , colour
+    , unordered-containers

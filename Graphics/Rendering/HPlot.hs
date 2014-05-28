@@ -8,7 +8,8 @@ module Graphics.Rendering.HPlot (
     module Graphics.Rendering.HPlot.Plots.Bars,
     module Graphics.Rendering.HPlot.Plots.Line,
     module Graphics.Rendering.HPlot.Plots.Ticks,
-    module Graphics.Rendering.HPlot.Plots.Heatmap
+    module Graphics.Rendering.HPlot.Plots.Heatmap,
+    module Graphics.Rendering.HPlot.Plots.Network
 ) where
 
 import Graphics.Rendering.HPlot.Axis
@@ -21,3 +22,4 @@ import Graphics.Rendering.HPlot.Plots.Bars
 import Graphics.Rendering.HPlot.Plots.Line
 import Graphics.Rendering.HPlot.Plots.Ticks
 import Graphics.Rendering.HPlot.Plots.Heatmap
+import Graphics.Rendering.HPlot.Plots.Network
