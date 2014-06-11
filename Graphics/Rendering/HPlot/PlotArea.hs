@@ -51,7 +51,7 @@ plotArea w h (l, t, r, b) = PlotArea w h [] lAxis tAxis rAxis bAxis background
     tAxis = makeAxis t w
     rAxis = makeAxis r h
     bAxis = makeAxis b w
-    background = lw 0 $ moveTo ((w/2) ^& (h/2)) $ rect w h
+    background = lwL 0 $ moveTo ((w/2) ^& (h/2)) $ rect w h
 
 showPlot :: PlotArea -> Diagram B R2
 showPlot (PlotArea w h ps l t r b bgr) = mconcat 

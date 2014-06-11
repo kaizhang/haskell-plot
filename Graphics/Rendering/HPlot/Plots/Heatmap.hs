@@ -31,7 +31,7 @@ heatmap mat opt (mapX, mapY) = map (\(Just (x,y), z) -> rect' z # moveTo (x ^& y
   where
     nRows = fromIntegral.length $ mat
     nCols = fromIntegral.length.head $ mat
-    rect' z = rect gapX gapY # lw 0 # fc (colorMap z (opt^.palette))
+    rect' z = rect gapX gapY # lwL 1 # fc (colorMap z (opt^.palette))
     ps = filter (isJust.fst) $ mapped._1 %~ runMap pMap $ zip [(x, y) | y <- [nRows, nRows-1..1], x <- [1..nCols]] mat''
     mat'' = map f mat'
     f = fromJust.runMap (linearMap r (0,1))

@@ -83,4 +83,4 @@ ticks len tickNum tickL = mconcat [ fromVertices [ x ^& 0, x ^& tickL ] | x <- t
     step = len / (fromIntegral tickNum - 1)
 
 text' :: String -> Diagram B R2
-text' s = stroke (textSVG' (TextOpts s lin2 INSIDE_H KERN False 0.2 0.2)) # fc black # lw 0
+text' s = stroke (textSVG' (TextOpts s lin2 INSIDE_H KERN False 0.2 0.2)) # fc black # lwL 0
