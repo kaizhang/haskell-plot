@@ -41,9 +41,9 @@ instance Default AxisOpts where
 
 realAxis :: (Double, Double) -> Double -> AxisOpts -> AxisFn
 realAxis r pad' opt = AxisFn 
-    ( \len -> let pMap = linearMap (l, u) (pad', len-pad')
+    ( \len -> let pMap = linearMap (fromRational l, fromRational u) (pad', len-pad')
                   axis' = axis len pad' $ opt & tickN .~ tickN'
-                  labels = zip labelP (map (text'.show) $ enumFromThenTo l (l+step) u)
+                  labels = zip labelP (map (text'.show.fromRational) $ enumFromThenTo l (l+step) u)
                   (l, u, step) = autoSteps ((opt^.tickN)-1) r
                   tickN' = truncate ((u - l) / step) + 1
                   labelP = zip (enumFromThenTo pad' (pad'+stepLabel) (len-pad')) $ repeat 0
