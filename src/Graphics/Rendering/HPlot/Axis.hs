@@ -14,7 +14,6 @@ module Graphics.Rendering.HPlot.Axis
     ) where
 
 import Diagrams.Prelude hiding (pad)
-import Diagrams.Backend.SVG
 import Data.Default
 import Control.Lens (makeLenses)
 import Graphics.Rendering.HPlot.Types
@@ -34,11 +33,11 @@ instance Default LabelOpts where
         , _labelRotation = 0
         }
 
-type Text = Diagram B R2
+type Text = DiaR2
 
 data Axis = Axis
     { _axisMap :: PointMap Double
-    , _axisDiag :: Diagram B R2
+    , _axisDiag :: DiaR2
     , _axisLabels :: [((Double, Double), Text)]
     , _axisLabelOpts :: LabelOpts
     }

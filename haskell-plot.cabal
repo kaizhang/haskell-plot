@@ -44,6 +44,7 @@ library
     , data-default >=0.5
     , diagrams-svg >=1.1
     , diagrams-lib >=1.2
+    , diagrams-cairo >= 1.2
     , SVGFonts
     , palette
     , colour

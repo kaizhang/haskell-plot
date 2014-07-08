@@ -17,7 +17,6 @@ module Graphics.Rendering.HPlot.PlotArea
     ) where
 
 import Diagrams.Prelude
-import Diagrams.Backend.SVG
 import Control.Lens (makeLenses, (^.))
 
 import Graphics.Rendering.HPlot.Types
@@ -31,12 +30,12 @@ data P = BL
 data PlotArea = PlotArea
     { _plotAreaWidth :: Double
     , _plotAreaHeight :: Double
-    , _plotAreaPlots :: [Diagram B R2]
+    , _plotAreaPlots :: [DiaR2]
     , _plotAreaLeft :: Axis -- ^ point map for left axis
     , _plotAreaTop :: Axis -- ^ point map for top axis
     , _plotAreaRight :: Axis -- ^ point map for right axis
     , _plotAreaBottom :: Axis -- ^ point map for bottom axis
-    , _plotAreaBackground :: Diagram B R2
+    , _plotAreaBackground :: DiaR2
     }
 
 makeLenses ''PlotArea
@@ -53,7 +52,7 @@ plotArea w h (l, t, r, b) = PlotArea w h [] lAxis tAxis rAxis bAxis background
     bAxis = makeAxis b w
     background = lwL 0 $ moveTo ((w/2) ^& (h/2)) $ rect w h
 
-showPlot :: PlotArea -> Diagram B R2
+showPlot :: PlotArea -> DiaR2
 showPlot (PlotArea w h ps l t r b bgr) = mconcat 
     [ showAxis 'l' l
     , translateY h . showAxis 't' $ t
@@ -63,7 +62,7 @@ showPlot (PlotArea w h ps l t r b bgr) = mconcat
     , bgr
     ]
 
-showAxis :: Char -> Axis -> Diagram B R2
+showAxis :: Char -> Axis -> DiaR2
 {-# INLINE showAxis #-}
 showAxis p a
     | p == 'l' = (reflectX.rotateBy (1/4) $ axis') 

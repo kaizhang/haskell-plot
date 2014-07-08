@@ -7,7 +7,7 @@ module Graphics.Rendering.HPlot.Simple
     , width
     , title
     , labels
-    , linePlot
+--    , linePlot
     , with
     , linePlot'
     ) where
@@ -39,6 +39,7 @@ instance Default LinePlotOpt where
         , _title = ""
         }
 
+{-
 linePlot :: LinePlotOpt -> IO ()
 linePlot opt = renderSVG "plot.svg" (Dims 480 480) $ text' (_title opt) === plot 
   where
@@ -53,8 +54,9 @@ linePlot opt = renderSVG "plot.svg" (Dims 480 480) $ text' (_title opt) === plot
     ys = _y opt
     w = _width opt
     h = _height opt
+    -}
 
---linePlot' :: LinePlotOpt -> Diagram B R2
+linePlot' :: LinePlotOpt -> DiaR2
 linePlot' opt = text' (_title opt) === plot 
   where
     plot = showPlot $ area <+ (l, BL)

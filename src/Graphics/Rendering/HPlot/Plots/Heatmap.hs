@@ -7,7 +7,6 @@ module Graphics.Rendering.HPlot.Plots.Heatmap
     ) where
 
 import Diagrams.Prelude
-import Diagrams.Backend.SVG
 import Data.Default
 import Control.Lens hiding ((#))
 import Data.Maybe
@@ -41,7 +40,7 @@ heatmap mat opt (mapX, mapY) = map (\(Just (x,y), z) -> rect' z # moveTo (x ^& y
     gapY = (fromJust.runMap mapY) 2 - (fromJust.runMap mapY) 1
     pMap = compose (mapX, mapY)
 
-colorKey :: Double -> Double -> (Double, Double) -> [Colour Double] -> Diagram B R2
+colorKey :: Double -> Double -> (Double, Double) -> [Colour Double] -> DiaR2
 colorKey w h r cs = vcat (map rect' [1,0.995..0])
   where
     rect' z = rect w (h/200) # lc (colorMap z cs) # fc (colorMap z cs)

@@ -5,7 +5,6 @@ module Graphics.Rendering.HPlot.Plots.Network
     ) where
 
 import Diagrams.Prelude
-import Diagrams.Backend.SVG
 import Data.Default
 import Control.Lens hiding ((#))
 import Data.Maybe

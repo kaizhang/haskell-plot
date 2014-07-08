@@ -12,7 +12,6 @@ module Graphics.Rendering.HPlot.Axes.Common
     ) where
 
 import Diagrams.Prelude
-import Diagrams.Backend.SVG
 import Graphics.Rendering.HPlot.Axis
 import Graphics.Rendering.HPlot.Types
 import Graphics.Rendering.HPlot.Utils
@@ -68,7 +67,7 @@ emptyAxis = AxisFn $ const $ Axis pMap mempty [] def
   where 
     pMap = PointMap (const Nothing) (0, -1)
 
-axis :: Double -> Double -> AxisOpts -> Diagram B R2
+axis :: Double -> Double -> AxisOpts -> DiaR2
 axis len pad opt = l <> translateX pad (majorTicks <> minorTicks)
   where
     l = fromVertices [ 0 ^& 0, len ^& 0 ]
@@ -76,11 +75,11 @@ axis len pad opt = l <> translateX pad (majorTicks <> minorTicks)
     minorTicks = ticks (len - 2*pad) minorN (opt^.minorTickLen)
     minorN = ((opt^.minorTickN) + 1) * ((opt^.tickN) - 1) + 1
 
-ticks :: Double -> Int -> Double -> Diagram B R2
+ticks :: Double -> Int -> Double -> DiaR2
 ticks len tickNum tickL = mconcat [ fromVertices [ x ^& 0, x ^& tickL ] | x <- ticksPos ] 
   where
     ticksPos = enumFromThenTo 0 step len
     step = len / (fromIntegral tickNum - 1)
 
-text' :: String -> Diagram B R2
+text' :: String -> DiaR2
 text' s = stroke (textSVG' (TextOpts s lin2 INSIDE_H KERN False 0.2 0.2)) # fc black # lwL 0

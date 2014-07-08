@@ -2,7 +2,8 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 module Graphics.Rendering.HPlot.Types 
-    ( DelayPlot
+    ( DiaR2
+    , DelayPlot
     , PointMap(..)
     , PlotData(..)
     , compose
@@ -11,9 +12,11 @@ module Graphics.Rendering.HPlot.Types
 
 import Data.Maybe
 import Diagrams.Prelude
-import Diagrams.Backend.SVG
+import Diagrams.Backend.Cairo
 
-type DelayPlot = (PointMap Double, PointMap Double) -> [Diagram B R2]
+type DiaR2 = Diagram B R2
+
+type DelayPlot = (PointMap Double, PointMap Double) -> [DiaR2]
 
 -- | mapping between points
 data PointMap a = PointMap
