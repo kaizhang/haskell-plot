@@ -34,6 +34,7 @@ library
     , Graphics.Rendering.HPlot.Plots.Ticks
     , Graphics.Rendering.HPlot.Plots.Heatmap
     , Graphics.Rendering.HPlot.Plots.Network
+    , Graphics.Rendering.HPlot.Simple
 
 --  other-modules:       
 
