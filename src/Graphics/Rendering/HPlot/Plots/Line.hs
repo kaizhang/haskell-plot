@@ -11,6 +11,7 @@ import Data.Default
 import Control.Lens (makeLenses, (^.))
 import Data.Maybe
 import Graphics.Rendering.HPlot.Types
+import Graphics.Rendering.HPlot.Utils (hasNaN)
 
 data LineOpts = LineOpts
     { _lineshape :: Char
@@ -24,8 +25,9 @@ instance Default LineOpts where
         }
 
 line :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> LineOpts -> DelayPlot
-line xs ys opt (mapX, mapY) = [l]
+line xs ys opt (mapX, mapY) | hasNaN xy = error "Line: Found NaN"
+                            | otherwise = [l]
   where
-    l = fromVertices.map p2.mapMaybe (runMap pMap) $ xy
+    l = lwO 1 $ fromVertices.map p2.mapMaybe (runMap pMap) $ xy
     xy = zip (getValues xs) $ getValues ys
     pMap = compose (mapX, mapY)

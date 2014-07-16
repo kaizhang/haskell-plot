@@ -1,11 +1,13 @@
 module Graphics.Rendering.HPlot.Utils
     ( autoSteps
     , linearMap
+    , hasNaN
     ) where
 
 import Data.List (minimumBy)
 import Data.Ord (comparing)
 import Graphics.Rendering.HPlot.Types
+import Data.Function
 
 chooseStep :: RealFloat a => a -> (a,a) -> Rational
 {-# INLINE chooseStep #-}
@@ -33,3 +35,6 @@ linearMap (l, u) (l', u') = PointMap mapFn (l, u)
   where
     mapFn x | x < l || x > u = Nothing
             | otherwise = Just $ (x - l) / (u - l) * (u' - l') + l'
+
+hasNaN :: [(Double, Double)] -> Bool
+hasNaN = any (uncurry ((||) `on` isNaN))

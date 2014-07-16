@@ -28,7 +28,7 @@ points xs ys opt (mapX, mapY) = map (uncurry moveTo) ps
   where
     ps = flip zip (repeat s).map p2.mapMaybe (runMap pMap) $ xy
     xy = zip (getValues xs) $ getValues ys
-    s = stroke.getShape $ opt^.shape
+    s = lwO 1 $ stroke.getShape $ opt^.shape
     pMap = compose (mapX, mapY)
 
 getShape :: Char -> Path R2
