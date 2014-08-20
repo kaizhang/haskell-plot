@@ -2,12 +2,23 @@ module Graphics.Rendering.HPlot.Utils
     ( autoSteps
     , linearMap
     , hasNaN
+    , text'
+    , drawDendrogram
     ) where
 
 import Data.List (minimumBy)
 import Data.Ord (comparing)
 import Graphics.Rendering.HPlot.Types
 import Data.Function
+import Graphics.SVGFonts.ReadFont
+
+import Data.Tree
+import Data.Maybe
+import Data.Clustering.Hierarchical
+import Diagrams.Prelude
+import Diagrams.Backend.Cairo
+import Diagrams.TwoD.Layout.Tree
+import Control.Monad.State
 
 chooseStep :: RealFloat a => a -> (a,a) -> Rational
 {-# INLINE chooseStep #-}
@@ -38,3 +49,45 @@ linearMap (l, u) (l', u') = PointMap mapFn (l, u)
 
 hasNaN :: [(Double, Double)] -> Bool
 hasNaN = any (uncurry ((||) `on` isNaN))
+
+text' :: String -> DiaR2
+text' s = stroke (textSVG' (TextOpts s lin2 INSIDE_H KERN False 0.2 0.2)) # fc black # lwL 0
+
+
+dendrogramLayout :: Double -> Double -> Double -> Dendrogram a -> Tree ((Maybe a, Maybe (Colour Double)), P2)
+dendrogramLayout w h cut tree = evalState (go tree) 0
+  where
+    go (Leaf x) = do
+        horiz <- get
+        put $ horiz + xSep
+        return $! Node ((Just x, Just red), w ^& horiz) []
+    go (Branch d l r) = do
+        left <- go l
+        horiz <- get
+        put $ horiz + xSep
+        right <- go r
+        let col | d <= cut = Just red
+                | otherwise = Nothing
+        return $! Node ((Nothing, col), (w * (maxD - d) / maxD) ^& horiz) [left, right]
+    maxD = case tree of
+        Branch d _ _ -> d
+        Leaf _ -> error "error"
+    xSep = h / fromIntegral (2 * ((length.elements) tree - 1))
+
+--dendrogramToBTree :: Dendrogram a -> BTree (Maybe a)
+--dendrogramToBTree (Branch _ left right) = BNode Nothing (dendrogramToBTree left) (dendrogramToBTree right)
+--dendrogramToBTree (Leaf x) = BNode (Just x) Empty Empty
+
+drawDendrogram :: Double -> Double -> Dendrogram a -> (a -> String) -> Diagram B R2
+drawDendrogram w h d show' = renderTree' f g' (dendrogramLayout w h 0.2 d)
+  where
+    f x | isNothing $ fst x = mempty
+        | otherwise = alignL $ text' $ show' $ fromJust $ fst x
+    g ((_, col1), a) ((_, col2), b) | ((||) `on` isNothing) col1 col2 = a ~~ b # lwO 1 # dashingO [4, 2] 1
+                                    | otherwise = a ~~ b # lwO 1 # lc (fromJust col1)
+    g' ((_, col1), a) ((_, col2), b) | ((||) `on` isNothing) col1 col2 = l # dashingO [4, 2] 1
+                                     | otherwise = l # lc (fromJust col1)
+      where
+        (x1, y1) = unp2 a
+        (x2, y2) = unp2 b
+        l = fromVertices [x1 ^& y1, x1 ^& y2, x2 ^& y2] # lwO 1

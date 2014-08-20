@@ -5,7 +5,6 @@ module Graphics.Rendering.HPlot.Axes.Common
     , indexAxis
     , emptyAxis
     , axis
-    , text'
     , tickLen
     , minorTickLen
     , labelOpts
@@ -15,7 +14,6 @@ import Diagrams.Prelude
 import Graphics.Rendering.HPlot.Axis
 import Graphics.Rendering.HPlot.Types
 import Graphics.Rendering.HPlot.Utils
-import Graphics.SVGFonts.ReadFont
 import Control.Lens hiding ((#))
 import Data.Default
 
@@ -80,6 +78,3 @@ ticks len tickNum tickL = mconcat [ fromVertices [ x ^& 0, x ^& tickL ] | x <- t
   where
     ticksPos = enumFromThenTo 0 step len
     step = len / (fromIntegral tickNum - 1)
-
-text' :: String -> DiaR2
-text' s = stroke (textSVG' (TextOpts s lin2 INSIDE_H KERN False 0.2 0.2)) # fc black # lwL 0

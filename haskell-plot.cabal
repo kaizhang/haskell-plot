@@ -41,11 +41,15 @@ library
   build-depends:
       base >=4 && <5
     , lens >=3.10
+    , hierarchical-clustering
     , data-default >=0.5
     , diagrams-svg >=1.1
     , diagrams-lib >=1.2
-    , diagrams-cairo >= 1.2
+    , diagrams-cairo >=1.2
+    , diagrams-contrib >=1.1
     , SVGFonts
     , palette
     , colour
+    , containers
     , unordered-containers
+    , mtl
