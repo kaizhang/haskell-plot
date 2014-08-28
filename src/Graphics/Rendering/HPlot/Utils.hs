@@ -1,9 +1,12 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Graphics.Rendering.HPlot.Utils
     ( autoSteps
     , linearMap
     , hasNaN
     , text'
     , drawDendrogram
+    , ordering
+    , eulerian
     ) where
 
 import Data.List (minimumBy)
@@ -19,6 +22,7 @@ import Diagrams.Prelude
 import Diagrams.Backend.Cairo
 import Diagrams.TwoD.Layout.Tree
 import Control.Monad.State
+import Data.List
 
 chooseStep :: RealFloat a => a -> (a,a) -> Rational
 {-# INLINE chooseStep #-}
@@ -91,3 +95,12 @@ drawDendrogram w h d show' = renderTree' f g' (dendrogramLayout w h 0.2 d)
         (x1, y1) = unp2 a
         (x2, y2) = unp2 b
         l = fromVertices [x1 ^& y1, x1 ^& y2, x2 ^& y2] # lwO 1
+
+-- | reorder data
+ordering :: [a] -> (a -> a -> Double) -> [a]
+ordering xs f = elements $ dendrogram UPGMA xs f
+
+-- | eulerian distance
+eulerian :: [Double] -> [Double] -> Double
+eulerian xs ys = sqrt $ foldl' (+) 0 $ zipWith (\x y -> (x - y)**2) xs ys
+
