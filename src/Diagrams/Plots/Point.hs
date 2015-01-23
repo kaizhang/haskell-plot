@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Plots.Points 
+module Diagrams.Plots.Point
     ( points
     , PointOpts
     , shape
@@ -10,7 +10,8 @@ import Diagrams.Prelude
 import Data.Default
 import Control.Lens (makeLenses, (^.))
 import Data.Maybe
-import Graphics.Rendering.HPlot.Types
+
+import Diagrams.Plots.Types
 
 data PointOpts = PointOpts
     { _shape :: Char
@@ -23,13 +24,13 @@ instance Default PointOpts where
         { _shape = 'o'
         }
 
-points :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> PointOpts -> DelayPlot
-points xs ys opt (mapX, mapY) = map (uncurry moveTo) ps
+points :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> PointOpts -> PlotFn
+points xs ys opt mapX mapY = map (uncurry moveTo) ps
   where
     ps = flip zip (repeat s).map p2.mapMaybe (runMap pMap) $ xy
     xy = zip (getValues xs) $ getValues ys
     s = lwO 1 $ stroke.getShape $ opt^.shape
-    pMap = compose (mapX, mapY)
+    pMap = compose mapX mapY
 
 getShape :: Char -> Path R2
 {-# INLINE getShape #-}

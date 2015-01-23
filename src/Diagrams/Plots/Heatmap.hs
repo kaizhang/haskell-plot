@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Plots.Heatmap
+module Diagrams.Plots.Heatmap
     ( heatmap
     , colorKey
     , palette
@@ -10,9 +10,10 @@ import Diagrams.Prelude
 import Data.Default
 import Control.Lens hiding ((#))
 import Data.Maybe
-import Graphics.Rendering.HPlot.Types
-import Graphics.Rendering.HPlot.Utils
 import Data.Colour.Palette.BrewerSet
+
+import Diagrams.Plots.Types
+import Diagrams.Plots.Utils
 
 data HeatmapOpts = HeatmapOpts
     { _palette :: [Colour Double] 
@@ -25,8 +26,8 @@ instance Default HeatmapOpts where
 
 makeLenses ''HeatmapOpts
 
-heatmap :: [[Double]] -> HeatmapOpts -> DelayPlot
-heatmap mat opt (mapX, mapY) = map (\(Just (x,y), z) -> rect' z # moveTo (x ^& y)) ps
+heatmap :: [[Double]] -> HeatmapOpts -> PlotFn
+heatmap mat opt mapX mapY = map (\(Just (x,y), z) -> rect' z # moveTo (x ^& y)) ps
   where
     nRows = fromIntegral.length $ mat
     nCols = fromIntegral.length.head $ mat
@@ -38,7 +39,7 @@ heatmap mat opt (mapX, mapY) = map (\(Just (x,y), z) -> rect' z # moveTo (x ^& y
     mat' = concat mat
     gapX = (fromJust.runMap mapX) 2 - (fromJust.runMap mapX) 1
     gapY = (fromJust.runMap mapY) 2 - (fromJust.runMap mapY) 1
-    pMap = compose (mapX, mapY)
+    pMap = compose mapX mapY
 
 colorKey :: Double -> Double -> (Double, Double) -> [Colour Double] -> DiaR2
 colorKey w h r cs = vcat (map rect' [1,0.995..0])

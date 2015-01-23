@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.PlotArea 
+module Diagrams.Plots.PlotArea 
     ( P(..)
     , PlotArea
     , plotAreaWidth
@@ -16,30 +16,32 @@ module Graphics.Rendering.HPlot.PlotArea
     , (<+)
     ) where
 
-import Diagrams.Prelude
-import Control.Lens (makeLenses, (^.))
+import Diagrams.Prelude hiding (rotation)
+import Control.Lens (makeLenses, makeFields, (^.))
 
-import Graphics.Rendering.HPlot.Types
-import Graphics.Rendering.HPlot.Axis
+import Diagrams.Plots.Types
+import Diagrams.Plots.Axis
 
-data P = BL
-       | TL
-       | TR
-       | BR
+-- | how to align a plot to the plot area
+data P = BL  -- Bottom Left
+       | TL  -- Top Left
+       | TR  -- Top Right
+       | BR  -- Bottom Right
 
 data PlotArea = PlotArea
-    { _plotAreaWidth :: Double
-    , _plotAreaHeight :: Double
-    , _plotAreaPlots :: [DiaR2]
-    , _plotAreaLeft :: Axis -- ^ point map for left axis
-    , _plotAreaTop :: Axis -- ^ point map for top axis
-    , _plotAreaRight :: Axis -- ^ point map for right axis
-    , _plotAreaBottom :: Axis -- ^ point map for bottom axis
-    , _plotAreaBackground :: DiaR2
+    { _plotAreaWidth :: !Double
+    , _plotAreaHeight :: !Double
+    , _plotAreaPlots :: ![DiaR2]
+    , _plotAreaLeft :: !Axis -- ^ point map for left axis
+    , _plotAreaTop :: !Axis -- ^ point map for top axis
+    , _plotAreaRight :: !Axis -- ^ point map for right axis
+    , _plotAreaBottom :: !Axis -- ^ point map for bottom axis
+    , _plotAreaBackground :: !DiaR2
     }
 
 makeLenses ''PlotArea
 
+-- | construct a plot area
 plotArea :: Double  -- ^ width
          -> Double  -- ^ height
          -> (AxisFn, AxisFn, AxisFn, AxisFn) -- ^ axes: left, top, right, bottom
@@ -54,17 +56,16 @@ plotArea w h (l, t, r, b) = PlotArea w h [] lAxis tAxis rAxis bAxis background
 
 showPlot :: PlotArea -> DiaR2
 showPlot (PlotArea w h ps l t r b bgr) = mconcat 
-    [ showAxis 'l' l
-    , translateY h . showAxis 't' $ t
-    , translateX w . showAxis 'r' $ r
-    , showAxis 'b' b
+    [ drawAxis 'l' l
+    , translateY h . drawAxis 't' $ t
+    , translateX w . drawAxis 'r' $ r
+    , drawAxis 'b' b
     , mconcat ps
     , bgr
     ]
 
-showAxis :: Char -> Axis -> DiaR2
-{-# INLINE showAxis #-}
-showAxis p a
+drawAxis :: Char -> Axis -> DiaR2
+drawAxis p a
     | p == 'l' = (reflectX.rotateBy (1/4) $ axis') 
                  <> mconcat ( map ( \((x, y), label) -> 
                         label # rotateBy r # alignR # moveTo ((y+dy) ^& (x+dx)) 
@@ -85,23 +86,24 @@ showAxis p a
   where
     axis' = a^.axisDiag
     labels = a^.axisLabels
-    dx = a^.axisLabelOpts^.labelOffsetX
-    dy = a^.axisLabelOpts^.labelOffsetY
-    r = a^.axisLabelOpts^.labelRotation
+    dx = a^.axisLabelOpts^.offsetX
+    dy = a^.axisLabelOpts^.offsetY
+    r = a^.axisLabelOpts^.rotation
+{-# INLINE drawAxis #-}
 
-placeOn :: (DelayPlot, P) -> PlotArea -> PlotArea
+placeOn :: (PlotFn, P) -> PlotArea -> PlotArea
 placeOn (pltFn, p) area = plotAreaPlots %~ (mconcat plt:) $ area
   where
     plt = case p of
-        BL -> pltFn (bMap, lMap)
-        TL -> pltFn (tMap, lMap)
-        TR -> pltFn (tMap, rMap)
-        BR -> pltFn (bMap, rMap)
+        BL -> pltFn bMap lMap
+        TL -> pltFn tMap lMap
+        TR -> pltFn tMap rMap
+        BR -> pltFn bMap rMap
     lMap = area^.plotAreaLeft^.axisMap
     bMap = area^.plotAreaBottom^.axisMap
     tMap = area^.plotAreaTop^.axisMap
     rMap = area^.plotAreaRight^.axisMap
 
-(<+) :: PlotArea -> (DelayPlot, P) -> PlotArea
+(<+) :: PlotArea -> (PlotFn, P) -> PlotArea
 infixl 1 <+
 (<+) = flip placeOn

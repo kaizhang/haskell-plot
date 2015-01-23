@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
-module Graphics.Rendering.HPlot.Utils
+module Diagrams.Plots.Utils
     ( autoSteps
     , linearMap
     , hasNaN
@@ -11,7 +11,6 @@ module Graphics.Rendering.HPlot.Utils
 
 import Data.List (minimumBy)
 import Data.Ord (comparing)
-import Graphics.Rendering.HPlot.Types
 import Data.Function
 import Graphics.SVGFonts.ReadFont
 
@@ -23,6 +22,8 @@ import Diagrams.Backend.Cairo
 import Diagrams.TwoD.Layout.Tree
 import Control.Monad.State
 import Data.List
+
+import Diagrams.Plots.Types
 
 chooseStep :: RealFloat a => a -> (a,a) -> Rational
 {-# INLINE chooseStep #-}

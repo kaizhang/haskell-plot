@@ -22,19 +22,18 @@ library
   ghc-options: -O2 -Wall
   hs-source-dirs: src
   exposed-modules:     
-      Graphics.Rendering.HPlot
-    , Graphics.Rendering.HPlot.Axis
-    , Graphics.Rendering.HPlot.Axes.Common
-    , Graphics.Rendering.HPlot.Utils
-    , Graphics.Rendering.HPlot.Types
-    , Graphics.Rendering.HPlot.PlotArea
-    , Graphics.Rendering.HPlot.Plots.Points
-    , Graphics.Rendering.HPlot.Plots.Bars
-    , Graphics.Rendering.HPlot.Plots.Line
-    , Graphics.Rendering.HPlot.Plots.Ticks
-    , Graphics.Rendering.HPlot.Plots.Heatmap
-    , Graphics.Rendering.HPlot.Plots.Network
-    , Graphics.Rendering.HPlot.Simple
+      Diagrams.Plots
+    , Diagrams.Plots.Axis
+    , Diagrams.Plots.Utils
+    , Diagrams.Plots.Types
+    , Diagrams.Plots.PlotArea
+    , Diagrams.Plots.Point
+    , Diagrams.Plots.Bar
+    , Diagrams.Plots.Line
+    , Diagrams.Plots.Tick
+    , Diagrams.Plots.Heatmap
+    , Diagrams.Plots.Network
+    , Diagrams.Plots.Simple
 
 --  other-modules:       
 

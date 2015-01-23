@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Graphics.Rendering.HPlot.Plots.Network
+module Diagrams.Plots.Network
     ( network
     ) where
 
@@ -8,20 +8,20 @@ import Diagrams.Prelude
 import Data.Default
 import Control.Lens hiding ((#))
 import Data.Maybe
-import Graphics.Rendering.HPlot.Types
-import Graphics.Rendering.HPlot.Utils
-import Graphics.Rendering.HPlot.Axes.Common
 import qualified Data.HashMap.Strict as M
 
-network :: [(String, (Double, Double))] -> [(String, String)] -> DelayPlot
-network vs es mapXY = [edges, ps]
+import Diagrams.Plots.Types
+import Diagrams.Plots.Utils
+import Diagrams.Plots.Axis
+
+network :: [(String, (Double, Double))] -> [(String, String)] -> PlotFn
+network vs es mapX mapY = [edges, ps]
   where
     ps = position $ map (\(s, p) -> (p2.fromJust.runMap pMap $ p, circle 0.05)) vs
-    pMap = compose mapXY
+    pMap = compose mapX mapY
     m = M.fromList vs
     edges = mconcat.mapMaybe f $ es
 
     f (s, t) = do s' <- M.lookup s m >>= runMap pMap
                   t' <- M.lookup t m >>= runMap pMap
                   return $ fromVertices [p2 s', p2 t']
-                
