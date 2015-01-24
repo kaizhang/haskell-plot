@@ -32,8 +32,8 @@ library
     , Diagrams.Plots.Line
     , Diagrams.Plots.Tick
     , Diagrams.Plots.Heatmap
-    , Diagrams.Plots.Network
-    , Diagrams.Plots.Simple
+    , Diagrams.Plots.Graph
+    , Diagrams.Plots.Basic
 
 --  other-modules:       
 

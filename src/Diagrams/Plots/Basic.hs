@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Diagrams.Plots.Simple
+module Diagrams.Plots.Basic
     ( x
     , y
     , height

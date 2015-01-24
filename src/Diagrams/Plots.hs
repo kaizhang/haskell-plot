@@ -8,7 +8,7 @@ module Diagrams.Plots (
     , module Diagrams.Plots.Line
     , module Diagrams.Plots.Tick
     , module Diagrams.Plots.Heatmap
-    , module Diagrams.Plots.Network
+    , module Diagrams.Plots.Graph
     ) where
 
 import Diagrams.Plots.Axis
@@ -20,4 +20,4 @@ import Diagrams.Plots.Bar
 import Diagrams.Plots.Line
 import Diagrams.Plots.Tick
 import Diagrams.Plots.Heatmap
-import Diagrams.Plots.Network
+import Diagrams.Plots.Graph
