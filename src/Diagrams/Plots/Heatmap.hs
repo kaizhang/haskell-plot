@@ -4,6 +4,7 @@ module Diagrams.Plots.Heatmap
     ( heatmap
     , colorKey
     , palette
+    , HeatmapOpt
     ) where
 
 import Diagrams.Prelude
@@ -15,18 +16,18 @@ import Data.Colour.Palette.BrewerSet
 import Diagrams.Plots.Types
 import Diagrams.Plots.Utils
 
-data HeatmapOpts = HeatmapOpts
+data HeatmapOpt = HeatmapOpt
     { _palette :: [Colour Double] 
     }
 
-instance Default HeatmapOpts where
-    def = HeatmapOpts
+instance Default HeatmapOpt where
+    def = HeatmapOpt
         { _palette = reverse $ brewerSet RdYlBu 11
         }
 
-makeLenses ''HeatmapOpts
+makeLenses ''HeatmapOpt
 
-heatmap :: [[Double]] -> HeatmapOpts -> PlotFn
+heatmap :: [[Double]] -> HeatmapOpt -> PlotFn
 heatmap mat opt mapX mapY = map (\(Just (x,y), z) -> rect' z # moveTo (x ^& y)) ps
   where
     nRows = fromIntegral.length $ mat

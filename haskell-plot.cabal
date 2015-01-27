@@ -52,3 +52,4 @@ library
     , unordered-containers
     , mtl
     , hierarchical-clustering
+    , void

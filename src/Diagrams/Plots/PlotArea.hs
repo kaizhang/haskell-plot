@@ -86,9 +86,9 @@ drawAxis p a
   where
     axis' = a^.axisDiag
     labels = a^.axisLabels
-    dx = a^.axisLabelOpts^.offsetX
-    dy = a^.axisLabelOpts^.offsetY
-    r = a^.axisLabelOpts^.rotation
+    dx = a^.axisLabelOpt^.offsetX
+    dy = a^.axisLabelOpt^.offsetY
+    r = a^.axisLabelOpt^.rotation
 {-# INLINE drawAxis #-}
 
 placeOn :: (PlotFn, P) -> PlotArea -> PlotArea

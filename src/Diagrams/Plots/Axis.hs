@@ -4,12 +4,12 @@
 
 module Diagrams.Plots.Axis
     ( AxisFn(..)
-    , LabelOpts
+    , LabelOpt
     , Axis(..)
     , axisMap
     , axisLabels
     , axisDiag
-    , axisLabelOpts
+    , axisLabelOpt
     , offsetX
     , offsetY
     , rotation
@@ -19,7 +19,7 @@ module Diagrams.Plots.Axis
     , axis
     , tickLen
     , minorTickLen
-    , labelOpts
+    , labelOpt
     ) where
 
 import Diagrams.Prelude hiding (pad,rotation)
@@ -30,38 +30,38 @@ import Diagrams.Plots.Types
 import Diagrams.Plots.Utils
 
 -- | control the rendering of labels
-data LabelOpts = LabelOpts
+data LabelOpt = LabelOpt
     { _labelOffsetX :: !Double
     , _labelOffsetY :: !Double
     , _labelRotation :: !Double
     } deriving (Show)
 
-makeFields ''LabelOpts
+makeFields ''LabelOpt
 
-instance Default LabelOpts where
-    def = LabelOpts
+instance Default LabelOpt where
+    def = LabelOpt
         { _labelOffsetX = 0
         , _labelOffsetY = -0.1
         , _labelRotation = 0
         }
 
-data AxisOpts = AxisOpts
+data AxisOpt = AxisOpt
     { _nTick :: !Int
     , _nMinorTick :: !Int
     , _tickLen :: !Double
     , _minorTickLen :: !Double
-    , _labelOpts :: !LabelOpts
+    , _labelOpt :: !LabelOpt
     }
 
-makeLenses ''AxisOpts
+makeLenses ''AxisOpt
 
-instance Default AxisOpts where
-    def = AxisOpts
+instance Default AxisOpt where
+    def = AxisOpt
         { _nTick = 5
         , _nMinorTick = 4
         , _tickLen = 0.1
         , _minorTickLen = 0.05
-        , _labelOpts = def
+        , _labelOpt = def
         }
 
 type Text = DiaR2
@@ -71,7 +71,7 @@ data Axis = Axis
     { _axisMap :: !(PointMap Double)
     , _axisDiag :: !DiaR2
     , _axisLabels :: ![((Double, Double), Text)]
-    , _axisLabelOpts :: !LabelOpts
+    , _axisLabelOpt :: !LabelOpt
     }
 
 makeLenses ''Axis
@@ -91,7 +91,7 @@ flipAxisFn axisF = AxisFn $ do (Axis m labels diag) <- makeAxis axisF
                                -}
 
 
-realAxis :: (Double, Double) -> Double -> AxisOpts -> AxisFn
+realAxis :: (Double, Double) -> Double -> AxisOpt -> AxisFn
 realAxis r pad' opt = AxisFn 
     ( \len -> let pMap = linearMap (fromRational l, fromRational u) (pad', len-pad')
                   axis' = lwO 1 $ axis len pad' $ opt & nTick .~ tickN'
@@ -100,10 +100,10 @@ realAxis r pad' opt = AxisFn
                   tickN' = truncate ((u - l) / step) + 1
                   labelP = zip (enumFromThenTo pad' (pad'+stepLabel) (len-pad')) $ repeat 0
                   stepLabel = (len - 2*pad') / fromIntegral (tickN' - 1)
-              in Axis pMap axis' labels (opt^.labelOpts)
+              in Axis pMap axis' labels (opt^.labelOpt)
     )
 
-indexAxis :: Int -> [String] -> Double -> AxisOpts -> AxisFn
+indexAxis :: Int -> [String] -> Double -> AxisOpt -> AxisFn
 indexAxis num labels pad' opt = AxisFn
     ( \len -> let axis' = axis len pad' $ opt & nTick .~ num
                                               & nMinorTick .~ 0
@@ -112,7 +112,7 @@ indexAxis num labels pad' opt = AxisFn
                   labels' = zip labelP $ map text' labels
                   labelP = zip (enumFromThenTo pad' (pad'+stepLabel) (len-pad')) $ repeat 0
                   stepLabel = (len - 2*pad') / fromIntegral (num - 1)
-              in Axis pMap axis' labels' (opt^.labelOpts)
+              in Axis pMap axis' labels' (opt^.labelOpt)
     )
 
 emptyAxis :: AxisFn
@@ -120,7 +120,7 @@ emptyAxis = AxisFn $ const $ Axis pMap mempty [] def
   where 
     pMap = PointMap (const Nothing) (0, -1)
 
-axis :: Double -> Double -> AxisOpts -> DiaR2
+axis :: Double -> Double -> AxisOpt -> DiaR2
 axis len pad opt = l <> translateX pad (majorTicks <> minorTicks)
   where
     l = fromVertices [ 0 ^& 0, len ^& 0 ]

@@ -20,6 +20,7 @@ data Node = Node
     , _nodeOpacity :: Double
     , _nodeX :: Double
     , _nodeY :: Double
+    , _nodeLw :: Double
     } deriving (Show)
 
 instance Default Node where
@@ -31,6 +32,7 @@ instance Default Node where
         , _nodeOpacity = 1
         , _nodeX = 0
         , _nodeY = 0
+        , _nodeLw = 0.3
         }
 
 data Edge = Edge
@@ -39,6 +41,7 @@ data Edge = Edge
     , _edgeColor :: Colour Double
     , _edgeFrom :: Int
     , _edgeTo :: Int
+    , _edgeWeight :: Double
     } deriving (Show)
 
 instance Default Edge where
@@ -48,12 +51,13 @@ instance Default Edge where
         , _edgeColor = black
         , _edgeFrom = 0
         , _edgeTo = 0
+        , _edgeWeight = 0.3
         }
 
 type Graph = ([Node], [Edge])
 
 drawGraph :: Graph -> PlotFn
-drawGraph (vs, es) mapX mapY = [edges, ps]
+drawGraph (vs, es) mapX mapY = [ps, edges]
   where
     vs' = M.fromList . map (_nodeId &&& id) $ vs
     ps = position $ map drawNode vs
@@ -61,8 +65,11 @@ drawGraph (vs, es) mapX mapY = [edges, ps]
     edges = mconcat . mapMaybe drawEdge $ es
 
     drawNode n = ( p2 . fromJust . runMap pMap . (_nodeX &&& _nodeY) $ n
-                 , circle (_nodeSize n) # fc (_nodeColor n) # opacity (_nodeOpacity n) )
+                 , circle (_nodeSize n) # fc (_nodeColor n)
+                                        # opacity (_nodeOpacity n)
+                                        # lwO (_nodeLw n)
+                 )
     drawEdge e = do
         s <- M.lookup (_edgeFrom e) vs' >>= runMap pMap . (_nodeX &&& _nodeY)
         t <- M.lookup (_edgeTo e) vs' >>= runMap pMap . (_nodeX &&& _nodeY)
-        return $ fromVertices [p2 s, p2 t]
+        return $ fromVertices [p2 s, p2 t] # lwO (_edgeWeight e)
