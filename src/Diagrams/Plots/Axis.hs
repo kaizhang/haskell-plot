@@ -31,18 +31,18 @@ import Diagrams.Plots.Utils
 
 -- | control the rendering of labels
 data LabelOpt = LabelOpt
-    { _labelOffsetX :: !Double
-    , _labelOffsetY :: !Double
-    , _labelRotation :: !Double
+    { _labelOptOffsetX :: !Double
+    , _labelOptOffsetY :: !Double
+    , _labelOptRotation :: !Double
     } deriving (Show)
 
 makeFields ''LabelOpt
 
 instance Default LabelOpt where
     def = LabelOpt
-        { _labelOffsetX = 0
-        , _labelOffsetY = -0.1
-        , _labelRotation = 0
+        { _labelOptOffsetX = 0
+        , _labelOptOffsetY = -0.1
+        , _labelOptRotation = 0
         }
 
 data AxisOpt = AxisOpt

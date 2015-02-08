@@ -17,6 +17,7 @@ module Diagrams.Plots.Basic
     , ylab
     , xNames
     , yNames
+    , extra
 
     -- * Line Options
     , showPoint 
@@ -37,45 +38,45 @@ import Data.Void (Void)
 import Diagrams.Plots
 
 data PlotOpt datX datY o = PlotOpt
-    { _plotX :: [datX]
-    , _plotY :: [datY]
-    , _plotHeight :: Double
-    , _plotWidth :: Double
-    , _plotXlab :: String
-    , _plotYlab :: String
-    , _plotXNames :: [String]
-    , _plotYNames :: [String]
-    , _plotTitle :: String
-    , _plotFile :: String
-    , _plotExtra :: o
+    { _plotOptX :: [datX]
+    , _plotOptY :: [datY]
+    , _plotOptHeight :: Double
+    , _plotOptWidth :: Double
+    , _plotOptXlab :: String
+    , _plotOptYlab :: String
+    , _plotOptXNames :: [String]
+    , _plotOptYNames :: [String]
+    , _plotOptTitle :: String
+    , _plotOptFile :: String
+    , _plotOptExtra :: o
     }
 
 makeFields ''PlotOpt
 
 instance Default o => Default (PlotOpt datX datY o) where
     def = PlotOpt
-        { _plotX = []
-        , _plotY = []
-        , _plotHeight = 480
-        , _plotWidth = 480
-        , _plotXlab = ""
-        , _plotYlab = ""
-        , _plotXNames = []
-        , _plotYNames = []
-        , _plotTitle = ""
-        , _plotFile = "plot.png"
-        , _plotExtra = def
+        { _plotOptX = []
+        , _plotOptY = []
+        , _plotOptHeight = 480
+        , _plotOptWidth = 480
+        , _plotOptXlab = ""
+        , _plotOptYlab = ""
+        , _plotOptXNames = []
+        , _plotOptYNames = []
+        , _plotOptTitle = ""
+        , _plotOptFile = "plot.png"
+        , _plotOptExtra = def
         }
 
 data LinePlotOpt = LinePlotOpt 
-    { _lineplotShowPoint :: Bool
+    { _linePlotOptShowPoint :: Bool
     }
 
 makeFields ''LinePlotOpt
 
 instance Default LinePlotOpt where
     def = LinePlotOpt
-        { _lineplotShowPoint = False
+        { _linePlotOptShowPoint = False
         }
 
 linePlot :: PlotOpt Double Double LinePlotOpt -> IO ()
