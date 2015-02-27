@@ -3,6 +3,7 @@ module Diagrams.Plots.Utils
     ( projection
     , autoSteps
     , linearMap
+    , linearMapBound
     , hasNaN
     , text'
     , drawDendrogram
@@ -74,6 +75,15 @@ linearMap (l, u) (l', u') = PointMap mapFn (l, u)
   where
     mapFn x | x < l || x > u = Nothing
             | otherwise = Just $ (x - l) / (u - l) * (u' - l') + l'
+{-# INLINE linearMap #-}
+
+linearMapBound :: (Double, Double) -> (Double, Double) -> PointMap Double
+linearMapBound (l, u) (l', u') = PointMap mapFn (l, u)
+  where
+    mapFn x | x < l = Just l' 
+            | x > u = Just u'
+            | otherwise = Just $ (x - l) / (u - l) * (u' - l') + l'
+{-# INLINE linearMapBound #-}
 
 hasNaN :: [(Double, Double)] -> Bool
 hasNaN = any (uncurry ((||) `on` isNaN))

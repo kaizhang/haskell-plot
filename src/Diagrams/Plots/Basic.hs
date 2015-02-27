@@ -29,12 +29,13 @@ module Diagrams.Plots.Basic
     , heatmap'
     ) where
 
-import Diagrams.Prelude (SizeSpec2D(..), with, (===))
-import Diagrams.Backend.Cairo
-import Data.Default
 import Control.Lens
+import Data.Default
+import Data.Monoid (mempty)
 import Data.Void (Void)
 
+import Diagrams.Backend.Cairo
+import Diagrams.Prelude (SizeSpec2D(..), with, (===))
 import Diagrams.Plots
 
 data PlotOpt datX datY o = PlotOpt
@@ -114,12 +115,12 @@ heatmap' :: PlotOpt [Double] Void HeatmapOpt -> DiaR2
 heatmap' opt = text' (opt^.title) === plot
   where
     plot = showPlot $ area <+ (heat,BL)
-    area = plotArea (5.5*w/h) 5.5 (yAxis, def, def, xAxis)
+    area = plotArea (5.5*w/h) 5.5 (rmAxisDiag yAxis, def, def, rmAxisDiag xAxis)
     xAxis = indexAxis c (opt^.xNames) (w' / fromIntegral c / 2) $
         with & tickLen .~ (-0.05)
              & labelOpt.rotation .~ (1/4)
     yAxis = indexAxis r (reverse $ opt^.yNames) (h' / fromIntegral r / 2) $ with & tickLen .~ (-0.05)
-    heat = Diagrams.Plots.heatmap xs def
+    heat = Diagrams.Plots.heatmap xs $ opt^.extra
     xs = opt^.x
     r = length xs
     c = length $ head xs
@@ -127,4 +128,5 @@ heatmap' opt = text' (opt^.title) === plot
     h = opt^.height
     w' = h' * w / h
     h' = 5.5
+    rmAxisDiag (AxisFn a) = AxisFn $ fmap (\f -> axisDiag .~ mempty $ f) a
 {-# INLINE heatmap' #-}
