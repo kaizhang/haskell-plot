@@ -17,11 +17,15 @@ module Diagrams.Plots.Basic
     , ylab
     , xNames
     , yNames
+    , xLabelOpt
+    , yLabelOpt
     , extra
 
     -- * Line Options
     , showPoint 
 
+    , barPlot
+    , barPlot'
     , linePlot
     , linePlot'
 
@@ -35,7 +39,7 @@ import Data.Monoid (mempty)
 import Data.Void (Void)
 
 import Diagrams.Backend.Cairo
-import Diagrams.Prelude (SizeSpec2D(..), with, (===))
+import Diagrams.Prelude (SizeSpec2D(..), with, (===), rect, (<>), center)
 import Diagrams.Plots
 
 data PlotOpt datX datY o = PlotOpt
@@ -47,6 +51,8 @@ data PlotOpt datX datY o = PlotOpt
     , _plotOptYlab :: String
     , _plotOptXNames :: [String]
     , _plotOptYNames :: [String]
+    , _plotOptXLabelOpt :: LabelOpt
+    , _plotOptYLabelOpt :: LabelOpt
     , _plotOptTitle :: String
     , _plotOptFile :: String
     , _plotOptExtra :: o
@@ -64,6 +70,8 @@ instance Default o => Default (PlotOpt datX datY o) where
         , _plotOptYlab = ""
         , _plotOptXNames = []
         , _plotOptYNames = []
+        , _plotOptXLabelOpt = def
+        , _plotOptYLabelOpt = def
         , _plotOptTitle = ""
         , _plotOptFile = "plot.png"
         , _plotOptExtra = def
@@ -80,6 +88,24 @@ instance Default LinePlotOpt where
         { _linePlotOptShowPoint = False
         }
 
+barPlot :: PlotOpt Double Void BarOpt -> IO ()
+barPlot opt = renderCairo (opt^.file) (Dims w h) . barPlot' $ opt
+  where
+    w = opt^.width
+    h = opt^.height
+
+barPlot' :: PlotOpt Double Void BarOpt -> DiaR2
+barPlot' opt = text' 0.3 (opt^.title) === plot
+  where
+    plot = showPlot $ area <+ (b, BL)
+    area = plotArea (5.5*w/h) 5.5 (yAxis, def, def, xAxis)
+    b = bars xs Nothing (opt^.extra)
+    yAxis = indexAxis (length xs) (opt^.yNames) 0.2 def
+    xAxis = realAxis (minimum xs, maximum xs) 0.2 def
+    xs = opt^.x
+    w = opt^.width
+    h = opt^.height
+
 linePlot :: PlotOpt Double Double LinePlotOpt -> IO ()
 linePlot opt = renderCairo (opt^.file) (Dims w h) . linePlot' $ opt
   where
@@ -87,9 +113,9 @@ linePlot opt = renderCairo (opt^.file) (Dims w h) . linePlot' $ opt
     h = opt^.height
 
 linePlot' :: PlotOpt Double Double LinePlotOpt -> DiaR2
-linePlot' opt = text' (opt^.title) === plot 
+linePlot' opt = text' 0.3 (opt^.title) === plot 
   where
-    plot | opt^.extra.showPoint =  showPlot $ area <+ (ps, BL) <+ (l, BL)
+    plot | opt^.extra.showPoint = showPlot $ area <+ (ps, BL) <+ (l, BL)
          | otherwise = showPlot $ area <+ (l, BL)
     area = plotArea (5.5*w/h) 5.5 (yAxis, def, def, xAxis)
     xAxis | null xs = indexAxis (length ys) (opt^.xNames) 0.2 def
@@ -112,14 +138,14 @@ heatmap opt = renderCairo (opt^.file) (Dims w h) . heatmap' $ opt
     h = opt^.height
 
 heatmap' :: PlotOpt [Double] Void HeatmapOpt -> DiaR2
-heatmap' opt = text' (opt^.title) === plot
+heatmap' opt = text' 0.3 (opt^.title) === plot
   where
-    plot = showPlot $ area <+ (heat,BL)
-    area = plotArea (5.5*w/h) 5.5 (rmAxisDiag yAxis, def, def, rmAxisDiag xAxis)
+    plot = rect (w'+1) (h'+1) <> center (showPlot $ area <+ (heat,BL))
+    area = plotArea w' h' (rmAxisDiag yAxis, def, def, rmAxisDiag xAxis)
     xAxis = indexAxis c (opt^.xNames) (w' / fromIntegral c / 2) $
-        with & tickLen .~ (-0.05)
-             & labelOpt.rotation .~ (1/4)
-    yAxis = indexAxis r (reverse $ opt^.yNames) (h' / fromIntegral r / 2) $ with & tickLen .~ (-0.05)
+        with & labelOpt .~ opt^.xLabelOpt
+    yAxis = indexAxis r (reverse $ opt^.yNames) (h' / fromIntegral r / 2) $
+        with & labelOpt .~ opt^.yLabelOpt
     heat = Diagrams.Plots.heatmap xs $ opt^.extra
     xs = opt^.x
     r = length xs

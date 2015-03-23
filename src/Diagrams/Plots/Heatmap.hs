@@ -34,7 +34,7 @@ heatmap :: [[Double]] -> HeatmapOpt -> PlotFn
 heatmap mat opt mapX mapY = map (\((x,y), z) -> rect' z # moveTo (x ^& y)) hm
   where
     hm = mapMaybe (\(i,v) -> runMap pMap i >>= \x -> return (x,v))
-       . zip [ (x,y) | x <- [1 .. nCol], y <- [nRow, nRow-1 .. 1] ]
+       . zip [ (x,y) | y <- [nRow, nRow-1 .. 1], x <- [1 .. nCol] ]
        . map (fromJust . runMap (linearMapBound r (0,1)))
        $ mat'
     r = fromMaybe (minimum mat', maximum mat') $ _range opt

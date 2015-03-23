@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Diagrams.Plots.Bar
-    ( BarOpts
+    ( BarOpt
     , barWidth
     , barBaseLine
     , barOrientation
@@ -15,29 +15,29 @@ import Data.Maybe
 
 import Diagrams.Plots.Types
 
-data BarOpts = BarOpts
+data BarOpt = BarOpt
     { _barWidth :: Double  -- ^ from 0 to 1
     , _barBaseLine :: Maybe Double
     , _barOrientation :: Char
     }
 
-makeLenses ''BarOpts
+makeLenses ''BarOpt
 
-instance Default BarOpts where
-    def = BarOpts
+instance Default BarOpt where
+    def = BarOpt
         { _barWidth = 0.8
         , _barBaseLine = Nothing
         , _barOrientation = '^'
         }
 
-bars :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> BarOpts -> PlotFn
+bars :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> BarOpt -> PlotFn
 bars xs ys opt m = case opt^.barOrientation of
                        '^' -> upBars xs ys opt m
                        '>' -> rightBars xs ys opt m
                        'V' -> downBars xs ys opt m
                        _ -> upBars xs ys opt m
 
-upBars :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> BarOpts -> PlotFn
+upBars :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> BarOpt -> PlotFn
 {-# INLINE upBars #-}
 upBars xs ys opt mapX mapY = map (uncurry moveTo) [ (x ^& ((y+bl)/2), rect w (y-bl)) | (x, y) <- xy ]
   where
@@ -48,7 +48,7 @@ upBars xs ys opt mapX mapY = map (uncurry moveTo) [ (x ^& ((y+bl)/2), rect w (y-
     bl = fromMaybe 0 $ do b <- opt^.barBaseLine
                           runMap mapY b
 
-rightBars :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> BarOpts -> PlotFn
+rightBars :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> BarOpt -> PlotFn
 rightBars xs ys opt mapX mapY = map (uncurry moveTo) [ ( ((x+bl)/2) ^& y, rect (x-bl) h) | (x, y) <- xy ]
   where
     xy = mapMaybe (runMap pMap) $ zip (getValues xs) $ getValues ys
@@ -59,7 +59,7 @@ rightBars xs ys opt mapX mapY = map (uncurry moveTo) [ ( ((x+bl)/2) ^& y, rect (
                           runMap mapX b
 {-# INLINE rightBars #-}
 
-downBars :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> BarOpts -> PlotFn
+downBars :: (PlotData m1 a1, PlotData m2 a2) => m1 a1 -> m2 a2 -> BarOpt -> PlotFn
 downBars xs ys opt mapX mapY = map (uncurry moveTo) [ (x ^& ((areaHeight+y-bl)/2), rect w (areaHeight-y-bl) ) | (x, y) <- xy ]
   where
     xy = mapMaybe (runMap pMap) $ zip (getValues xs) $ getValues ys

@@ -24,16 +24,17 @@ library
   exposed-modules:     
       Diagrams.Plots
     , Diagrams.Plots.Axis
-    , Diagrams.Plots.Utils
+    , Diagrams.Plots.Bar
+    , Diagrams.Plots.Basic
+    , Diagrams.Plots.Dendrogram
+    , Diagrams.Plots.Graph
+    , Diagrams.Plots.Heatmap
     , Diagrams.Plots.Types
     , Diagrams.Plots.PlotArea
     , Diagrams.Plots.Point
-    , Diagrams.Plots.Bar
     , Diagrams.Plots.Line
     , Diagrams.Plots.Tick
-    , Diagrams.Plots.Heatmap
-    , Diagrams.Plots.Graph
-    , Diagrams.Plots.Basic
+    , Diagrams.Plots.Utils
 
 --  other-modules:       
 
@@ -51,6 +52,6 @@ library
     , containers
     , unordered-containers
     , mtl
-    , hierarchical-clustering
+    , clustering
     , void
     , vector

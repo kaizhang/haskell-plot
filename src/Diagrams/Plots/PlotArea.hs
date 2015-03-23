@@ -17,10 +17,11 @@ module Diagrams.Plots.PlotArea
     ) where
 
 import Diagrams.Prelude hiding (rotation)
-import Control.Lens (makeLenses, makeFields, (^.))
+import Control.Lens (makeLenses, (^.))
 
-import Diagrams.Plots.Types
 import Diagrams.Plots.Axis
+import Diagrams.Plots.Types
+import Diagrams.Plots.Utils (text')
 
 -- | how to align a plot to the plot area
 data P = BL  -- Bottom Left
@@ -66,28 +67,34 @@ showPlot (PlotArea w h ps l t r b bgr) = mconcat
 
 drawAxis :: Char -> Axis -> DiaR2
 drawAxis p a
-    | p == 'l' = (reflectX.rotateBy (1/4) $ axis') 
-                 <> mconcat ( map ( \((x, y), label) -> 
-                        label # rotateBy r # alignR # moveTo ((y+dy) ^& (x+dx)) 
-                    ) labels )
+    | p == 'l' = (reflectX . rotateBy (1/4)) axis'
+              <> mconcat ( flip map labels $ \((x,y), label) -> 
+                    alignedText 1 0.5 label # rotateBy r
+                                            # fontSizeO fontsize
+                                            # moveTo ((y+dy) ^& (x+dx)) )
     | p == 't' = reflectY axis'
-                 <> mconcat ( map ( \((x, y), label) ->
-                        label # rotateBy r # moveTo ((x+dx) ^& (-y-dy))
-                    ) labels )
+              <> mconcat ( flip map labels $ \((x,y), label) ->
+                    text' fontsize label # rotateBy r
+                                         # moveTo ((x+dx) ^& (-y-dy)) )
     | p == 'r' = rotateBy (1/4) axis'
-                 <> mconcat ( map ( \((x, y), label) ->
-                        label # rotateBy r # alignL # moveTo ((-y-dy) ^& (x+dx))
-                    ) labels )
+              <> mconcat ( flip map labels $ \((x,y), label) ->
+                    alignedText 0 0.5 label # rotateBy r
+                                            # fontSizeO fontsize
+                                            # moveTo ((-y-dy) ^& (x+dx)) )
     | p == 'b' = axis'
-                 <> mconcat ( map ( \((x, y), label) -> 
-                        label # (if r == 0 then id else rotateBy r.alignR) # moveTo ((x+dx) ^& (y+dy))
-                    ) labels )
+              <> mconcat ( flip map labels $ \((x,y), label) -> 
+                    let t | r == 0 = text label
+                          | otherwise = alignedText 1 0.5 label
+                    in t # rotateBy r
+                         # fontSizeO fontsize
+                         # moveTo ((x+dx) ^& (y+dy)) )
     | otherwise = undefined
   where
     axis' = a^.axisDiag
     labels = a^.axisLabels
     dx = a^.axisLabelOpt^.offsetX
     dy = a^.axisLabelOpt^.offsetY
+    fontsize = a^.axisLabelOpt^.size
     r = a^.axisLabelOpt^.rotation
 {-# INLINE drawAxis #-}
 

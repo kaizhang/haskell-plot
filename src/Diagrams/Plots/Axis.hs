@@ -13,6 +13,7 @@ module Diagrams.Plots.Axis
     , offsetX
     , offsetY
     , rotation
+    , size
     , realAxis
     , indexAxis
     , emptyAxis
@@ -34,6 +35,7 @@ data LabelOpt = LabelOpt
     { _labelOptOffsetX :: !Double
     , _labelOptOffsetY :: !Double
     , _labelOptRotation :: !Double
+    , _labelOptSize :: !Double
     } deriving (Show)
 
 makeFields ''LabelOpt
@@ -43,6 +45,7 @@ instance Default LabelOpt where
         { _labelOptOffsetX = 0
         , _labelOptOffsetY = -0.1
         , _labelOptRotation = 0
+        , _labelOptSize = 0.2
         }
 
 data AxisOpt = AxisOpt
@@ -64,13 +67,11 @@ instance Default AxisOpt where
         , _labelOpt = def
         }
 
-type Text = DiaR2
-
 -- | axis data type
 data Axis = Axis
     { _axisMap :: !(PointMap Double)
     , _axisDiag :: !DiaR2
-    , _axisLabels :: ![((Double, Double), Text)]
+    , _axisLabels :: ![((Double, Double), String)]
     , _axisLabelOpt :: !LabelOpt
     }
 
@@ -92,16 +93,16 @@ flipAxisFn axisF = AxisFn $ do (Axis m labels diag) <- makeAxis axisF
 
 
 realAxis :: (Double, Double) -> Double -> AxisOpt -> AxisFn
-realAxis r pad' opt = AxisFn 
-    ( \len -> let pMap = linearMap (fromRational l, fromRational u) (pad', len-pad')
-                  axis' = lwO 1 $ axis len pad' $ opt & nTick .~ tickN'
-                  labels = zip labelP (map (text'.show.fromRational) $ enumFromThenTo l (l+step) u)
-                  (l, u, step) = autoSteps ((opt^.nTick)-1) r
-                  tickN' = truncate ((u - l) / step) + 1
-                  labelP = zip (enumFromThenTo pad' (pad'+stepLabel) (len-pad')) $ repeat 0
-                  stepLabel = (len - 2*pad') / fromIntegral (tickN' - 1)
-              in Axis pMap axis' labels (opt^.labelOpt)
-    )
+realAxis r pad' opt = AxisFn ( \len ->
+    let pMap = linearMap (fromRational l, fromRational u) (pad', len-pad')
+        (l, u, step) = autoSteps ((opt^.nTick)-1) r
+        axis' = lwO 1 $ axis len pad' $ opt & nTick .~ tickN'
+        labels = zip labelP
+            $ map ((show :: Float -> String) . fromRational) [l, l+step .. u]
+        tickN' = truncate ((u - l) / step) + 1
+        labelP = zip (enumFromThenTo pad' (pad'+stepLabel) (len-pad')) $ repeat 0
+        stepLabel = (len - 2*pad') / fromIntegral (tickN' - 1)
+    in Axis pMap axis' labels (opt^.labelOpt) )
 
 indexAxis :: Int -> [String] -> Double -> AxisOpt -> AxisFn
 indexAxis num labels pad' opt = AxisFn
@@ -109,7 +110,7 @@ indexAxis num labels pad' opt = AxisFn
                                               & nMinorTick .~ 0
                                               & minorTickLen .~ 0
                   pMap = linearMap (1, fromIntegral num) (pad', len-pad')
-                  labels' = zip labelP $ map text' labels
+                  labels' = zip labelP labels
                   labelP = zip (enumFromThenTo pad' (pad'+stepLabel) (len-pad')) $ repeat 0
                   stepLabel = (len - 2*pad') / fromIntegral (num - 1)
               in Axis pMap axis' labels' (opt^.labelOpt)
