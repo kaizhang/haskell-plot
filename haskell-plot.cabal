@@ -26,6 +26,7 @@ library
     , Diagrams.Plots.Axis
     , Diagrams.Plots.Bar
     , Diagrams.Plots.Basic
+    , Diagrams.Plots.Basic.Types
     , Diagrams.Plots.Dendrogram
     , Diagrams.Plots.Graph
     , Diagrams.Plots.Heatmap

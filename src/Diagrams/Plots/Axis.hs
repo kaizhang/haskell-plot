@@ -1,6 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Diagrams.Plots.Axis
     ( AxisFn(..)
@@ -14,6 +16,7 @@ module Diagrams.Plots.Axis
     , offsetY
     , rotation
     , size
+    , fontFamily
     , realAxis
     , indexAxis
     , emptyAxis
@@ -36,6 +39,7 @@ data LabelOpt = LabelOpt
     , _labelOptOffsetY :: !Double
     , _labelOptRotation :: !Double
     , _labelOptSize :: !Double
+    , _labelOptFontFamily :: !String
     } deriving (Show)
 
 makeFields ''LabelOpt
@@ -46,6 +50,7 @@ instance Default LabelOpt where
         , _labelOptOffsetY = -0.1
         , _labelOptRotation = 0
         , _labelOptSize = 0.2
+        , _labelOptFontFamily  = "helvetica"
         }
 
 data AxisOpt = AxisOpt

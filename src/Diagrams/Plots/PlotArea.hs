@@ -71,7 +71,8 @@ drawAxis p a
               <> mconcat ( flip map labels $ \((x,y), label) -> 
                     alignedText 1 0.5 label # rotateBy r
                                             # fontSizeO fontsize
-                                            # moveTo ((y+dy) ^& (x+dx)) )
+                                            # font fontfamily
+                                            # moveTo ((y+dx) ^& (x+dy)) )
     | p == 't' = reflectY axis'
               <> mconcat ( flip map labels $ \((x,y), label) ->
                     text' fontsize label # rotateBy r
@@ -80,13 +81,15 @@ drawAxis p a
               <> mconcat ( flip map labels $ \((x,y), label) ->
                     alignedText 0 0.5 label # rotateBy r
                                             # fontSizeO fontsize
-                                            # moveTo ((-y-dy) ^& (x+dx)) )
+                                            # font fontfamily
+                                            # moveTo ((-y-dx) ^& (x+dy)) )
     | p == 'b' = axis'
               <> mconcat ( flip map labels $ \((x,y), label) -> 
                     let t | r == 0 = text label
                           | otherwise = alignedText 1 0.5 label
                     in t # rotateBy r
                          # fontSizeO fontsize
+                         # font fontfamily
                          # moveTo ((x+dx) ^& (y+dy)) )
     | otherwise = undefined
   where
@@ -95,6 +98,7 @@ drawAxis p a
     dx = a^.axisLabelOpt^.offsetX
     dy = a^.axisLabelOpt^.offsetY
     fontsize = a^.axisLabelOpt^.size
+    fontfamily = a^.axisLabelOpt^.fontFamily
     r = a^.axisLabelOpt^.rotation
 {-# INLINE drawAxis #-}
 
