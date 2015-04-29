@@ -22,7 +22,7 @@ import Diagrams.Plots
 import Diagrams.Plots.Basic.Types
 
 barPlot :: PlotOpt Double Void BarOpt -> IO ()
-barPlot opt = renderCairo (opt^.file) (Dims w h) . barPlot' $ opt
+barPlot opt = renderCairo (opt^.file) (dims2D w h) . barPlot' $ opt
   where
     w = opt^.width
     h = opt^.height
@@ -40,7 +40,7 @@ barPlot' opt = text' 0.3 (opt^.title) === plot
     h = opt^.height
 
 linePlot :: PlotOpt Double Double LinePlotOpt -> IO ()
-linePlot opt = renderCairo (opt^.file) (Dims w h) . linePlot' $ opt
+linePlot opt = renderCairo (opt^.file) (dims2D w h) . linePlot' $ opt
   where
     w = opt^.width
     h = opt^.height
@@ -65,7 +65,7 @@ linePlot' opt = text' 0.3 (opt^.title) === plot
 {-# INLINE linePlot' #-}
 
 heatmap :: PlotOpt [Double] Void HeatmapOpt -> IO ()
-heatmap opt = renderCairo (opt^.file) (Dims w h) . heatmap' $ opt
+heatmap opt = renderCairo (opt^.file) (dims2D w h) . heatmap' $ opt
   where
     w = opt^.width
     h = opt^.height

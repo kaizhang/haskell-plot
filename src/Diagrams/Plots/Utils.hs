@@ -10,13 +10,11 @@ module Diagrams.Plots.Utils
 
 import Data.Ord (comparing)
 import Data.Function
-import Graphics.SVGFonts.ReadFont
 
 import Diagrams.Prelude
 import Data.List
 
 import Diagrams.Plots.Types
-import Diagrams.Backend.Cairo.Text
 
 -- | project a 3d point to 2d
 projection :: (Double, Double, Double)  -- ^ position of camera

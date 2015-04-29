@@ -14,7 +14,7 @@ import Data.Maybe
 import Diagrams.Prelude
 import Diagrams.Backend.Cairo (B)
 
-type DiaR2 = Diagram B R2
+type DiaR2 = Diagram B
 
 type PlotFn = PointMap Double -> PointMap Double -> [DiaR2]
 

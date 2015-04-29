@@ -26,9 +26,7 @@ module Diagrams.Plots.Axis
     , labelOpt
     ) where
 
-import Diagrams.Prelude hiding (pad,rotation)
-import Data.Default
-import Control.Lens (makeLenses, makeFields, (^.))
+import Diagrams.Prelude hiding (pad, rotation, size)
 
 import Diagrams.Plots.Types
 import Diagrams.Plots.Utils

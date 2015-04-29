@@ -32,7 +32,7 @@ points xs ys opt mapX mapY = map (uncurry moveTo) ps
     s = lwO 1 $ stroke.getShape $ opt^.shape
     pMap = compose mapX mapY
 
-getShape :: Char -> Path R2
+getShape :: Char -> Path V2 Double
 {-# INLINE getShape #-}
 getShape s | s == 'o' = circle 0.07
            | s == '^' = eqTriangle 0.1
@@ -42,11 +42,11 @@ getShape s | s == 'o' = circle 0.07
            | s == 'x' = cross 0.07
            | otherwise = circle 0.07
 
-cross :: Double -> Path R2
+cross :: Double -> Path V2 Double
 {-# INLINE cross #-}
 cross x = fromVertices [ x^&(-x) , (-x)^&x ]
           <> fromVertices [ x^&x , (-x)^&(-x) ]
 
-plus :: Double -> Path R2
+plus :: Double -> Path V2 Double
 {-# INLINE plus #-}
 plus x = cross x # rotate (45 @@ deg)

@@ -11,7 +11,7 @@ import Control.Monad.State
 
 import Diagrams.Plots.Utils
 
-dendrogramLayout :: Double -> Double -> Double -> Dendrogram a -> Tree ((Maybe a, Maybe (Colour Double)), P2)
+dendrogramLayout :: Double -> Double -> Double -> Dendrogram a -> Tree ((Maybe a, Maybe (Colour Double)), P2 Double)
 dendrogramLayout w h cut tree = evalState (go tree) 0
   where
     go (Leaf x) = do
@@ -35,7 +35,7 @@ dendrogramLayout w h cut tree = evalState (go tree) 0
 --dendrogramToBTree (Branch _ left right) = BNode Nothing (dendrogramToBTree left) (dendrogramToBTree right)
 --dendrogramToBTree (Leaf x) = BNode (Just x) Empty Empty
 
-drawDendrogram :: Double -> Double -> Dendrogram a -> (a -> String) -> Diagram B R2
+drawDendrogram :: Double -> Double -> Dendrogram a -> (a -> String) -> Diagram B
 drawDendrogram w h d show' = renderTree' f g' (dendrogramLayout w h 0.2 d)
   where
     f x | isNothing $ fst x = mempty

@@ -16,7 +16,7 @@ module Diagrams.Plots.PlotArea
     , (<+)
     ) where
 
-import Diagrams.Prelude hiding (rotation)
+import Diagrams.Prelude hiding (rotation, size)
 import Control.Lens (makeLenses, (^.))
 
 import Diagrams.Plots.Axis
