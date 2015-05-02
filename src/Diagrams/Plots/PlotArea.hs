@@ -72,7 +72,7 @@ drawAxis p a
                     alignedText 1 0.5 label # rotateBy r
                                             # fontSizeO fontsize
                                             # font fontfamily
-                                            # moveTo ((y+dx) ^& (x+dy)) )
+                                            # moveTo ((y+dx-0.1) ^& (x+dy)) )
     | p == 't' = reflectY axis'
               <> mconcat ( flip map labels $ \((x,y), label) ->
                     text' fontsize label # rotateBy r
@@ -90,7 +90,7 @@ drawAxis p a
                     in t # rotateBy r
                          # fontSizeO fontsize
                          # font fontfamily
-                         # moveTo ((x+dx) ^& (y+dy)) )
+                         # moveTo ((x+dx) ^& (y+dy+0.1)) )
     | otherwise = undefined
   where
     axis' = a^.axisDiag

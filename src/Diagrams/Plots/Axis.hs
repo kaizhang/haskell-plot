@@ -45,9 +45,9 @@ makeFields ''LabelOpt
 instance Default LabelOpt where
     def = LabelOpt
         { _labelOptOffsetX = 0
-        , _labelOptOffsetY = -0.1
+        , _labelOptOffsetY = 0
         , _labelOptRotation = 0
-        , _labelOptSize = 0.2
+        , _labelOptSize = 12
         , _labelOptFontFamily  = "helvetica"
         }
 
