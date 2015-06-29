@@ -24,7 +24,7 @@ data HeatmapOpt = HeatmapOpt
 
 instance Default HeatmapOpt where
     def = HeatmapOpt
-        { _palette = reverse $ brewerSet RdYlBu 11
+        { _palette = reverse $ brewerSet RdBu 6
         , _range = Nothing
         }
 

@@ -35,11 +35,11 @@ dendrogramLayout w h cut tree = evalState (go tree) 0
 --dendrogramToBTree (Branch _ left right) = BNode Nothing (dendrogramToBTree left) (dendrogramToBTree right)
 --dendrogramToBTree (Leaf x) = BNode (Just x) Empty Empty
 
-drawDendrogram :: Double -> Double -> Dendrogram a -> (a -> String) -> Diagram B
-drawDendrogram w h d show' = renderTree' f g' (dendrogramLayout w h 0.2 d)
+drawDendrogram :: Double -> Double -> Double -> Dendrogram a -> (a -> String) -> Diagram B
+drawDendrogram w h cutHeight d show' = renderTree' f g' (dendrogramLayout w h cutHeight d)
   where
     f x | isNothing $ fst x = mempty
-        | otherwise = alignL $ text' 0.2 $ show' $ fromJust $ fst x
+        | otherwise = alignedText 0 0.5 $ show' $ fromJust $ fst x
     g ((_, col1), a) ((_, col2), b) | ((||) `on` isNothing) col1 col2 = a ~~ b # lwO 1 # dashingO [4, 2] 1
                                     | otherwise = a ~~ b # lwO 1 # lc (fromJust col1)
     g' ((_, col1), a) ((_, col2), b) | ((||) `on` isNothing) col1 col2 = l # dashingO [4, 2] 1

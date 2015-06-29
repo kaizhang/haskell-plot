@@ -90,7 +90,7 @@ drawAxis p a
                     in t # rotateBy r
                          # fontSizeO fontsize
                          # font fontfamily
-                         # moveTo ((x+dx) ^& (y+dy+0.1)) )
+                         # moveTo ((x+dx) ^& (y+dy-0.1)) )
     | otherwise = undefined
   where
     axis' = a^.axisDiag
