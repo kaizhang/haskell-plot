@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
 module Diagrams.Plots.Graph
     ( Node(..)
     , Edge(..)
